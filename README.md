@@ -1,4 +1,4 @@
-# Geoseg - A Computer Vision Package for Remote Sensing Image Super Resolution
+# Geosr - A Computer Vision Package for Remote Sensing Image Super Resolution
 
 ## Structure of directories
 ### sub directories
