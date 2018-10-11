@@ -5,13 +5,17 @@
 @Copyright: Chokurei
 @License: MIT
 
-Vision Tools    
+Vision Tools
 """
-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from imageio import imread
 import torch
+
+Utils_DIR = os.path.dirname(os.path.abspath(__file__))
+import sys
+sys.path.append(os.path.join(Utils_DIR, '../models'))
 
 class show_compare_sigle():
     """
@@ -21,7 +25,7 @@ class show_compare_sigle():
         """
         Parameters
         ----------
-            images: list 
+            images: list
                 eg: [hr, lr, sr]
             titles: lsit
                 eg: ['high resolution', 'low resolution', 'super resolution']
@@ -52,22 +56,21 @@ class show_compare_sigle():
         plt.show()
 
 if __name__ == "__main__":
-    from models.fsrcnn import Net
-    
+    from fsrcnn import Net
+
     img_path = '../data/image.png'
     upscale_factor = 2
-    
+
     img = imread(img_path)
     nb_channel = img.shape[-1]
     img_torch = torch.FloatTensor(np.expand_dims(np.transpose(img,(-1,0,1)),0))
-    
+
     generator = Net(nb_channel, upscale_factor)
     gen_img = generator(img_torch)
     gen_img = np.squeeze(gen_img.detach().numpy())
     sr_img = np.transpose(gen_img,(1,2,0))
-    
+
     images = [img, sr_img]
     titles = ['low resolution', 'super resolution']
     show_compare = show_compare_sigle(images, titles)
     show_compare.lr_sr()
-
