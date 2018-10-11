@@ -6,8 +6,6 @@
 Geosr
 ├── data
 │   └── image.png
-├── utils
-│   └── vision.py
 ├── models
 │   ├── blockunits.py
 │   ├── drcn.py
@@ -25,3 +23,4 @@ Geosr
 │   └── vision.py
 ...
 ```
+
