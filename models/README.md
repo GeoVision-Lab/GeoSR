@@ -20,7 +20,7 @@ CVPR2016: Accurate Image Super-Resolution Using Very Deep Convolutional Networks
 CVPR2016: Deeply-Recursive Convolutional Network for Image Super-Resolution
 ![drcn](/uploads/bb86c225a1792473c0f50527577458cb/drcn.png)
 
-## RED
+## RedNet
 NIPS2016: Image Restoration Using Convolutional Auto-encoders with Symmetric Skip Connections
 ![rednet](/uploads/f83cd932c8340c6c9b60a5a75a1df778/rednet.png)
 
