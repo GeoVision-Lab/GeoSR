@@ -24,16 +24,16 @@ class VDSR(nn.Module):
         
         super(VDSR, self).__init__()
         
-        self.relu = nn.ReLU(inplace=True)
+        # input conv
         self.input_conv = nn.Sequential(nn.Conv2d(nb_channels, base_kernel, kernel_size=3, stride=1, padding=1, bias=False),
                                         nn.ReLU(inplace=True))
-
+        # residual_layers
         conv_blocks = []
         for _ in range(num_residuals):
             conv_blocks.append(nn.Sequential(nn.Conv2d(base_kernel, base_kernel, kernel_size=3, stride=1, padding=1, bias=False),
                                              nn.ReLU(inplace=True)))
         self.residual_layers = nn.Sequential(*conv_blocks)
-
+        # output
         self.output_conv = nn.Conv2d(base_kernel, nb_channels, kernel_size=3, stride=1, padding=1, bias=False)
  
     def forward(self, x):
@@ -77,6 +77,6 @@ if __name__ == "__main__":
 
     model = VDSR(nb_channel, base_kernel)
     gen_y = model(x)
-    print("SRCNN->:")
+    print("VDSR->:")
     print(" Network input: ", x.shape)
     print("        output: ", gen_y.shape)

@@ -3,7 +3,7 @@
 """
 @CreateTime:   2018-10-10T12:16:31+09:00
 @Email:  guozhilingty@gmail.com
-@Copyright: Chokurei
+@Copyright: Shiba-lab
 @License: MIT
 """
 import numpy as np
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     x = torch.FloatTensor(
         np.random.random((1, nb_channel, img_col, img_row)))
 
-    model = ESPCN(nb_channel, upscale_factor, base_kernel)
+    model = ESPCN(nb_channel, upscale_factor, 64)
     gen_y = model(x)
     print("ESPCN->:")
     print(" Network input: ", x.shape)
