@@ -11,3 +11,11 @@ result: rs_img(hr), rs_in(lr), rs_pre(sr)
 3. srcnn.py
 ### ./utils
 1. vision.py: result comparison
+
+## 2010/10/11
+### ./models
+1. blockunits.py
+2. drcn.py
+3. rednet.py
+4. vdsr.py
+
