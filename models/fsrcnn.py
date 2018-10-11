@@ -59,13 +59,13 @@ class Net(torch.nn.Module):
 
 if __name__ == "__main__":
     # Hyper Parameters
-    nb_channel = 3
+    num_channel = 3
     upscale_factor = 2
     base_kernel = 64
     x = torch.FloatTensor(
-            np.random.random((1, nb_channel, 224, 224)))
+            np.random.random((1, num_channel, 224, 224)))
 
-    generator = Net(nb_channel, upscale_factor, base_kernel)
+    generator = Net(num_channel, upscale_factor, base_kernel)
     gen_y = generator(x)
     print("FSRCNN->:")
     print(" Network input: ", x.shape)

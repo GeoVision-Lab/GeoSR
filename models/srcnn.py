@@ -16,7 +16,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-
 class Net(torch.nn.Module):
     def __init__(self, 
                  num_channel=3,
@@ -47,13 +46,13 @@ def normal_init(m, mean, std):
     
 if __name__ == "__main__":
     # Hyper Parameters
-    nb_channel = 3
+    num_channel = 3
     upscale_factor = 2
     base_kernel = 64
     x = torch.FloatTensor(
-            np.random.random((1, nb_channel, 224, 224)))
+            np.random.random((1, num_channel, 224, 224)))
 
-    generator = Net(nb_channel, upscale_factor, base_kernel)
+    generator = Net(num_channel, upscale_factor, base_kernel)
     gen_y = generator(x)
     print("SRCNN->:")
     print(" Network input: ", x.shape)
