@@ -3,6 +3,7 @@ dataset/*
 checkpoint/*.pth
 result/area/*
 *.DS_Store
+models/__pycache__/
 __pycache__*
 .ipynb_checkpoints/*
 reference/*
