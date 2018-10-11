@@ -1,9 +1,9 @@
+*.DS_Store
 data/*
 dataset/*
+reference/*
 checkpoint/*.pth
 result/area/*
-*.DS_Store
 models/__pycache__/
-__pycache__*
+utils/__pycache__/
 .ipynb_checkpoints/*
-reference/*
