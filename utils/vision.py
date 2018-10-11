@@ -56,7 +56,7 @@ class show_compare_sigle():
         plt.show()
 
 if __name__ == "__main__":
-    from fsrcnn import Net
+    from fsrcnn import FSRCNN
 
     img_path = '../data/image.png'
     upscale_factor = 2
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     nb_channel = img.shape[-1]
     img_torch = torch.FloatTensor(np.expand_dims(np.transpose(img,(-1,0,1)),0))
 
-    generator = Net(nb_channel, upscale_factor)
+    generator = FSRCNN(nb_channel, upscale_factor)
     gen_img = generator(img_torch)
     gen_img = np.squeeze(gen_img.detach().numpy())
     sr_img = np.transpose(gen_img,(1,2,0))
