@@ -56,16 +56,17 @@ class show_compare_sigle():
         plt.show()
 
 if __name__ == "__main__":
-    from fsrcnn import FSRCNN
+    from models.srdensenet import SRDenseNet
 
     img_path = './data/image.png'
-    upscale_factor = 2
+    upscale_factor = 1 
+    base_kernel = 32
 
     img = imread(img_path)
     nb_channel = img.shape[-1]
     img_torch = torch.FloatTensor(np.expand_dims(np.transpose(img,(-1,0,1)),0))
 
-    generator = FSRCNN(nb_channel, upscale_factor)
+    generator = SRDenseNet(nb_channel, upscale_factor, base_kernel)
     gen_img = generator(img_torch)
     gen_img = np.squeeze(gen_img.detach().numpy())
     sr_img = np.transpose(gen_img,(1,2,0))
