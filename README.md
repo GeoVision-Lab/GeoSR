@@ -1,10 +1,10 @@
 # Geosr - A Computer Vision Package for Remote Sensing Image Super Resolution
-
-[rs_in.tif](/uploads/97c688f69f56639105e11285aa39848f/rs_in.tif)
-
-[rs_img.tif](/uploads/24deb1f0c7101892758f88db6f61b056/rs_img.tif)
-
-[rs_pre.tif](/uploads/fc413b4fa2f3d2b8d747e0486808dfac/rs_pre.tif)
+High Resolution Image: 
+![hr_img2](/uploads/78c541a647afdb8820cfa0b682a96820/hr_img2.png)
+Low Resolution Image:
+![lr_img2](/uploads/ddb75a8f6e9c7e498c89ac02deeb69e0/lr_img2.png)
+Super Resolution Image:
+![sr_img2](/uploads/55831ea1829bcb47b65d6911ef60d783/sr_img2.png)
 
 ## Structure of directories
 ### sub directories
