@@ -38,7 +38,7 @@ class _Dense_Block(nn.Module):
         self.conv6 = nn.Conv2d(kernels[4], kernels[0], kernel_size=3, stride=1, padding=1)
         self.conv7 = nn.Conv2d(kernels[5], kernels[0], kernel_size=3, stride=1, padding=1)
         self.conv8 = nn.Conv2d(kernels[6], kernels[0], kernel_size=3, stride=1, padding=1)
-        
+
     def forward(self, x):
         conv1 = self.relu(self.conv1(x))
         conv2 = self.relu(self.conv2(conv1))
@@ -91,7 +91,7 @@ class SRDenseNet(nn.Module):
             deconv_blocks.append(nn.Sequential(
                     nn.ConvTranspose2d(kernels[1], kernels[1], kernel_size=2, stride=2, padding=0, bias=False),
                     nn.PReLU()))
-        self.deconv = nn.Sequential(*deconv_blocks)        
+        self.deconv = nn.Sequential(*deconv_blocks)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -105,36 +105,36 @@ class SRDenseNet(nn.Module):
                 m.weight.data = weight.view(1, 1, h, w).repeat(c1, c2, 1, 1)
                 if m.bias is not None:
                     m.bias.data.zero_()
-                    
+
     def make_layer(self, block, channel_in, base_kernel):
         layers = []
         layers.append(block(channel_in, base_kernel))
         return nn.Sequential(*layers)
 
-    def forward(self, x):    
+    def forward(self, x):
         residual = self.relu(self.lowlevel(x))
 
         out = self.denseblock1(residual)
         concat = torch.cat([residual,out], 1)
-    
+
         out = self.denseblock2(concat)
         concat = torch.cat([concat,out], 1)
 
         out = self.denseblock3(concat)
         concat = torch.cat([concat,out], 1)
-        
+
         out = self.denseblock4(concat)
         concat = torch.cat([concat,out], 1)
-        
+
         out = self.denseblock5(concat)
         concat = torch.cat([concat,out], 1)
-        
+
         out = self.denseblock6(concat)
         concat = torch.cat([concat,out], 1)
-        
+
         out = self.denseblock7(concat)
         concat = torch.cat([concat,out], 1)
-        
+
         out = self.denseblock8(concat)
         out = torch.cat([concat,out], 1)
 
@@ -143,9 +143,9 @@ class SRDenseNet(nn.Module):
         out = self.deconv(out)
 
         out = self.reconstruction(out)
-       
+
         return out
-        
+
 class L1_Charbonnier_loss(nn.Module):
     """L1 Charbonnierloss."""
     def __init__(self):
@@ -155,8 +155,8 @@ class L1_Charbonnier_loss(nn.Module):
     def forward(self, X, Y):
         diff = torch.add(X, -Y)
         error = torch.sqrt( diff * diff + self.eps )
-        loss = torch.sum(error) 
-        return loss 
+        loss = torch.sum(error)
+        return loss
 
 if __name__ == "__main__":
     # Hyper Parameters
