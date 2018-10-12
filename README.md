@@ -13,6 +13,7 @@ Geosr
 │   ├── fsrnn.py
 │   ├── rednet.py
 │   ├── srcnn.py
+│   ├── srdensenet.py
 │   └── vdsr.py
 ├── utils
 │   ├── datasets.py
