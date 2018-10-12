@@ -24,3 +24,5 @@ Geosr
 ...
 ```
 
+## Model Architecture
+
