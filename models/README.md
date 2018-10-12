@@ -1,4 +1,4 @@
-# Architecture Introduction
+# Model Architecture
 ---------------------
 ## SRCNN
 ECCV2014: Learning a Deep Convolutional Network for Image Super-Resolution
