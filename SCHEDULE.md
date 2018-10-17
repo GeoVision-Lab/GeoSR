@@ -23,3 +23,19 @@ result: rs_img(hr), rs_in(lr), rs_pre(sr)
 ### ./models
 1. srdensenet.py
 
+## 2010/10/12 ~ 10/15
+Finished entire geosr-keras version  
+URL: https://gitlab.com/Chokurei/geosr_keras
+
+## 2010/10/16
+### .
+1. ESPCN.py  
+The original main.py, can be conducted
+### ./utils
+1. data.py
+2. datasets.py
+
+## 2010/10/17
+### ./utils
+preprocess.py  
+tow mode: stride/random
