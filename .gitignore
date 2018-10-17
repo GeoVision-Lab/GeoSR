@@ -1,6 +1,4 @@
 *.DS_Store
-data/*
-dataset/*
 reference/*
 checkpoint/*.pth
 result/area/*
