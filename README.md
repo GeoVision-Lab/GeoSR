@@ -65,7 +65,11 @@ If you use our code or any of the ideas from our paper please cite:
 ```
 ### Requirements
 * [Python 3.5.2+](https://www.python.org/)
+<<<<<<< HEAD
 * [torch 0.4.1+](https://pytorch.org/tutorials/)
+=======
+* [torch 0.4.1+](https://pytorch.org/tutorials/) 
+>>>>>>> 855ef1b6d27be1ffd73d216d01fd8e2b88e6be20
 * [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
 ### Data
 ```
