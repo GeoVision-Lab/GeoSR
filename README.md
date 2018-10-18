@@ -8,7 +8,20 @@ High Resolution: PSNR            |  Low Resolution: 33.32 |  Super Resolution: 3
 ```
 Geosr
 ├── data
-│   └── image.png
+│   └── data_dir
+├── dataset
+│   └── save_dir
+│       ├── all.csv
+│       ├── train.csv
+│       ├── test.csv
+│       ├── val.csv
+│       ├── statistic.csv
+│       └── image
+│           ├── train
+│           ├── test
+│           └── val
+├── models
+│   └── trained_model
 ├── models
 │   ├── blockunits.py
 │   ├── drcn.py
@@ -28,12 +41,12 @@ Geosr
 │   └── vision.py
 ...
 ```
-#### directory
-* ./data/data_dir: original images
-* ./dataset/save_dir: croped images
+#### directories
+* `./data/data_dir`: original images
+* `./dataset/save_dir`: croped images
 * ./models: model architecture
 
-#### script
+#### scripts
 * extractor.py: Extract crops from big images saved in './data/data_dir' with different methods, save crops and related information in './dataset/save_dir'
 
 ## Model Architecture
