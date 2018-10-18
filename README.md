@@ -51,3 +51,19 @@ Geosr
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
+
+## Get Started
+### Reference
+If you use our code or any of the ideas from our paper please cite:
+```
+@article{wu2018geoseg,
+  title={Geoseg: A Computer Vision Package for Automatic Building Segmentation and Outline Extraction},
+  author={Wu, Guangming and Guo, Zhiling},
+  journal={arXiv preprint arXiv:1809.03175},
+  year={2018}
+}
+### Requirements
+- Python                             3.5.2
+- Keras                              2.1.6
+- tensorflow-gpu                     1.8.0
+```
