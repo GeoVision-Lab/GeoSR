@@ -8,25 +8,33 @@ High Resolution: PSNR            |  Low Resolution: 33.32 |  Super Resolution: 3
 ```
 Geosr
 ├── data
-│   └── image.png
+│   └── image.png
 ├── models
-│   ├── blockunits.py
-│   ├── drcn.py
-│   ├── espcn.py
-│   ├── fsrnn.py
-│   ├── rednet.py
-│   ├── srcnn.py
-│   ├── srdensenet.py
-│   └── vdsr.py
+│   ├── blockunits.py
+│   ├── drcn.py
+│   ├── espcn.py
+│   ├── fsrnn.py
+│   ├── rednet.py
+│   ├── srcnn.py
+│   ├── srdensenet.py
+│   └── vdsr.py
 ├── utils
-│   ├── datasets.py
-│   ├── __init__.py
-│   ├── metrics.py
-│   ├── preprocess.py
-│   ├── runner.py
-│   └── vision.py
+│   ├── datasets.py
+│   ├── extractor.py
+│   ├── __init__.py
+│   ├── metrics.py
+│   ├── preprocess.py
+│   ├── runner.py
+│   └── vision.py
 ...
 ```
+#### directory
+* ./data/data_dir: original images
+* ./dataset/save_dir: croped images
+* ./models: model architecture
+
+#### script
+* extractor.py: Extract crops from big images saved in './data/data_dir' with different methods, save crops and related information in './dataset/save_dir'
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
