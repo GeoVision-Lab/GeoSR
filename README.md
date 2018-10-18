@@ -43,11 +43,12 @@ Geosr
 ```
 #### directories
 * `./data/data_dir`: original images
-* `./dataset/save_dir`: croped images
-* ./models: model architecture
+* `./dataset/save_dir`: croped images and related information
+* `./models`: model architecture
+* `./utils`: utilities
 
 #### scripts
-* extractor.py: Extract crops from big images saved in './data/data_dir' with different methods, save crops and related information in './dataset/save_dir'
+* `extractor.py`: Extract crops from big images saved in './data/data_dir' with different methods, save crops and related information in './dataset/save_dir'
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
@@ -65,10 +66,13 @@ If you use our code or any of the ideas from our paper please cite:
 ```
 ### Requirements
 * [Python 3.5.2+](https://www.python.org/)
-* [torch 0.4.1+](https://pytorch.org/tutorials/) 
-* [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)  
-
+* [torch 0.4.1+](https://pytorch.org/tutorials/)
+* [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
 ### Data
 ```
 $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 ```
+### Requirements
+* [Python 3.5.2+](https://www.python.org/)
+* [torch 0.4.1+](https://pytorch.org/tutorials/)
+* [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
