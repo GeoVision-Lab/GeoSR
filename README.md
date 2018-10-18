@@ -62,8 +62,8 @@ If you use our code or any of the ideas from our paper please cite:
   journal={arXiv preprint arXiv:1809.03175},
   year={2018}
 }
-### Requirements
-- Python                             3.5.2
-- Keras                              2.1.6
-- tensorflow-gpu                     1.8.0
 ```
+### Requirements
+* [Python 3.5.2+](https://www.python.org/)
+* [torch 0.4.1+](https://pytorch.org/tutorials/) 
+* [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
