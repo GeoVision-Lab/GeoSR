@@ -48,7 +48,7 @@ Geosr
 * `./utils`: utilities
 
 #### scripts
-* `extractor.py`: Extract crops from big images saved in './data/data_dir' with different methods, save crops and related information in './dataset/save_dir'
+* `extractor.py`: Extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
