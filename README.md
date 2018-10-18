@@ -20,7 +20,7 @@ Geosr
 │           ├── train
 │           ├── test
 │           └── val
-├── models
+├── model_zoo
 │   └── trained_model
 ├── models
 │   ├── blockunits.py
