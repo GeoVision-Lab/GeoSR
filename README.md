@@ -49,6 +49,8 @@ Geosr
 
 #### scripts
 * `extractor.py`: Extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
+* `preprocess.py`: Data augmentation
+* `loader.py`: load images from `./data/data_dir` with data augmentation
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
