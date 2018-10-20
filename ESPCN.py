@@ -18,7 +18,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from models.espcn import ESPCN
-from utils.loader_aug import get_training_set, get_test_set
+from utils.loader import get_training_set, get_test_set
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -29,7 +29,7 @@ parser.add_argument('--crop_size', type=int, default=224, help='crop size from e
 parser.add_argument('--nb_channel', type=int, default=3, help="input image band")
 parser.add_argument('--upscale_factor', type=int, default=2, help="super resolution upscale factor")
 parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
-parser.add_argument('--aug_mode', type=str, default='a', choices=['a', 'b', 'c', 'd', 'e'], 
+parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'], 
                     help='data augmentation mode: a, b, c, d, e')
 parser.add_argument('--base_kernel', type=int, default=64, help="base kernel")
 parser.add_argument('--batchSize', type=int, default=64, help='training batch size')
@@ -67,6 +67,7 @@ optimizer = optim.Adam(model.parameters(), lr=opt.lr)
 def train(epoch):
     epoch_loss = 0
     for iteration, batch in enumerate(training_data_loader, 1):
+
         input, target = batch[0].to(device), batch[1].to(device)
 
         optimizer.zero_grad()
@@ -84,7 +85,7 @@ def test():
     with torch.no_grad():
         for batch in testing_data_loader:
             input, target = batch[0].to(device), batch[1].to(device)
-
+            
             prediction = model(input)
             mse = criterion(prediction, target)
             psnr = 10 * log10(1 / mse.item())
