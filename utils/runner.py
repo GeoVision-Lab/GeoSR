@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
 """
-  @CreateTime:   2018-01-26T16:50:00+09:00
-  @Email:  guangmingwu2010@gmail.com
-  @Copyright: go-hiroaki
-  @License: MIT
+@CreateTime:   2018-10-10T12:16:31+09:00
+@Email:  guozhilingty@gmail.com
+@Copyright: Chokurei
+@License: MIT
 """
+
 import os
 import sys
 sys.path.append('./utils')
@@ -24,7 +25,7 @@ from torch.autograd import Variable
 
 Utils_DIR = os.path.dirname(os.path.abspath(__file__))
 Logs_DIR = os.path.join(Utils_DIR, '../logs')
-Checkpoint_DIR = os.path.join(Utils_DIR, '../checkpoint')
+Checkpoint_DIR = os.path.join(Utils_DIR, '../model_zoo')
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
@@ -33,7 +34,7 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 def load_checkpoint(name):
     assert os.path.exists("{}/{}".format(Checkpoint_DIR, name)
                           ), "{} not exists.".format(name)
-    print("Loading checkpoint: {}".format(name))
+    print("Loading model: {}".format(name))
     return torch.load("{}/{}".format(Checkpoint_DIR, name))
 
 
@@ -103,7 +104,6 @@ class Base(object):
                     format='png', bbox_inches='tight', dpi=1200)
         #plt.savefig('curve/{}_curve.eps'.format(fig_title), format='eps', bbox_inches='tight', dpi=1200)
 
-        return 0
 
 
 class Trainer(Base):
@@ -138,10 +138,9 @@ class Trainer(Base):
                 if self.iter > args.iters:
                     self.iter -= 1
                     break
-                # convert numpy.ndarray into pytorch tensor
                 x, y = next(batch_iterator)
-                x = Variable(x)
-                y = Variable(y)
+#                x = Variable(x)
+#                y = Variable(y)
                 if args.cuda:
                     x = x.cuda()
                     y = y.cuda()
@@ -187,8 +186,7 @@ class Trainer(Base):
         start = time.time()
         for step in range(steps):
             x, y = next(batch_iterator)
-            x = Variable(x, volatile=True)
-            y = Variable(y, volatile=True)
+
             if args.cuda:
                 x = x.cuda()
                 y = y.cuda()
@@ -225,8 +223,6 @@ class Trainer(Base):
         start = time.time()
         for step in range(steps):
             x, y = next(batch_iterator)
-            x = Variable(x, volatile=True)
-            y = Variable(y, volatile=True)
             if args.cuda:
                 x = x.cuda()
                 y = y.cuda()
