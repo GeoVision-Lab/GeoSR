@@ -15,8 +15,7 @@ sys.path.append('./utils')
 import torch.utils.data as data
 import argparse
 from PIL import Image
-from utils.preprocessor import input_transform, target_transform
-from utils.preprocessor_aug import DataAug
+from utils.preprocessor import DataAug
 import torchvision.transforms.functional as TF
 
 Utils_DIR = os.path.dirname(os.path.abspath(__file__))
