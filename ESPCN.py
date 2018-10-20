@@ -12,21 +12,29 @@ from __future__ import print_function
 import argparse
 from math import log10
 
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from models.espcn import ESPCN
-from utils.data import get_training_set, get_test_set
+from utils.loader_aug import get_training_set, get_test_set
+
+DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
+parser.add_argument('--data_dir', type=str, default=os.path.join(DIR, 'dataset','map-rand'), help="data directory")
+parser.add_argument('--crop_size', type=int, default=224, help='crop size from each data. Default=224 (same to image size)')
 parser.add_argument('--nb_channel', type=int, default=3, help="input image band")
 parser.add_argument('--upscale_factor', type=int, default=2, help="super resolution upscale factor")
+parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
+parser.add_argument('--aug_mode', type=str, default='a', choices=['a', 'b', 'c', 'd', 'e'], 
+                    help='data augmentation mode: a, b, c, d, e')
 parser.add_argument('--base_kernel', type=int, default=64, help="base kernel")
 parser.add_argument('--batchSize', type=int, default=64, help='training batch size')
 parser.add_argument('--testBatchSize', type=int, default=10, help='testing batch size')
-parser.add_argument('--nEpochs', type=int, default=2, help='number of epochs to train for')
+parser.add_argument('--nEpochs', type=int, default=10, help='number of epochs to train for')
 parser.add_argument('--lr', type=float, default=0.01, help='Learning Rate. Default=0.01')
 parser.add_argument('--cuda', action='store_true', help='use cuda?')
 parser.add_argument('--threads', type=int, default=4, help='number of threads for data loader to use')
@@ -43,8 +51,10 @@ torch.manual_seed(opt.seed)
 device = torch.device("cuda" if opt.cuda else "cpu")
 
 print('===> Loading datasets')
-train_set = get_training_set(opt.upscale_factor)
-test_set = get_test_set(opt.upscale_factor)
+train_set = get_training_set(opt.data_dir, opt.aug, opt.aug_mode, opt.crop_size, opt.upscale_factor)
+#train_set = get_training_set(opt.data_dir, opt.upscale_factor)
+test_set = get_test_set(opt.data_dir, opt.aug, opt.aug_mode, opt.crop_size, opt.upscale_factor)
+
 training_data_loader = DataLoader(dataset=train_set, num_workers=opt.threads, batch_size=opt.batchSize, shuffle=True)
 testing_data_loader = DataLoader(dataset=test_set, num_workers=opt.threads, batch_size=opt.testBatchSize, shuffle=False)
     
@@ -80,7 +90,6 @@ def test():
             psnr = 10 * log10(1 / mse.item())
             avg_psnr += psnr
     print("===> Avg. PSNR: {:.4f} dB".format(avg_psnr / len(testing_data_loader)))
-
 
 def checkpoint(epoch):
     model_out_path = "model_epoch_{}.pth".format(epoch)
