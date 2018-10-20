@@ -90,7 +90,7 @@ class Extractor(Extractor_Save):
         """
         data_dir: dir in ../data used to save original data
         """
-        self.src_names = sorted(os.listdir(os.path.join(Utils_DIR, '../data', data_dir)))
+        self.src_names = sorted(os.listdir(os.path.join(Utils_DIR, '../src', data_dir)))
         self.data_dir = data_dir
 
         self.img_rows = img_rows
@@ -116,7 +116,7 @@ class Extractor(Extractor_Save):
         _infos = []
         for self.src_name in self.src_names:
             print("\t Image:{}/{}".format(self.src_names.index(self.src_name)+1, len(self.src_names)))
-            self.src_path = os.path.join(Utils_DIR, '../data', self.data_dir, self.src_name)
+            self.src_path = os.path.join(Utils_DIR, '../src', self.data_dir, self.src_name)
             # extract slices from source
             self.src_img = imread(self.src_path)
             rows, cols = self.src_img.shape[:2]
@@ -167,7 +167,7 @@ class Extractor(Extractor_Save):
         random.seed(self.seed)
         for self.src_name in self.src_names:
             print("\t Image:{}/{}".format(self.src_names.index(self.src_name)+1, len(self.src_names)))
-            self.src_path = os.path.join(Utils_DIR, '../data', self.data_dir, self.src_name)
+            self.src_path = os.path.join(Utils_DIR, '../src', self.data_dir, self.src_name)
             # extract slices from source
             self.src_img = imread(self.src_path)
             rows, cols = self.src_img.shape[:2]
