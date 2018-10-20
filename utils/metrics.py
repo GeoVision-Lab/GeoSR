@@ -207,6 +207,55 @@ def psnr(y_pred, y_true, threshold=None):
     """
     return 10 * torch.log10(1 - mse(y_pred, y_true, threshold=None))
 
+def sam(y_pred, y_true, threshold=None):
+    """
+    Spectral Angle Mapper
+    Calculates the angle in spectral space between pixels and a set of reference spectra (endmembers) 
+        for image classification based on spectral similarity. 
+    """
+
+def compare_nrmse(im_true, im_test, norm_type='Euclidean'):
+    """Compute the normalized root mean-squared error (NRMSE) between two
+    images.
+    Parameters
+    ----------
+    im_true : ndarray
+        Ground-truth image.
+    im_test : ndarray
+        Test image.
+    norm_type : {'Euclidean', 'min-max', 'mean'}
+        Controls the normalization method to use in the denominator of the
+        NRMSE.  There is no standard method of normalization across the
+        literature [1]_.  The methods available here are as follows:
+        - 'Euclidean' : normalize by the averaged Euclidean norm of
+          ``im_true``::
+              NRMSE = RMSE * sqrt(N) / || im_true ||
+          where || . || denotes the Frobenius norm and ``N = im_true.size``.
+          This result is equivalent to::
+              NRMSE = || im_true - im_test || / || im_true ||.
+        - 'min-max'   : normalize by the intensity range of ``im_true``.
+        - 'mean'      : normalize by the mean of ``im_true``
+    Returns
+    -------
+    nrmse : float
+        The NRMSE metric.
+    References
+    ----------
+    .. [1] https://en.wikipedia.org/wiki/Root-mean-square_deviation
+    """
+    _assert_compatible(im_true, im_test)
+    im_true, im_test = _as_floats(im_true, im_test)
+
+    norm_type = norm_type.lower()
+    if norm_type == 'euclidean':
+        denom = np.sqrt(np.mean((im_true*im_true), dtype=np.float64))
+    elif norm_type == 'min-max':
+        denom = im_true.max() - im_true.min()
+    elif norm_type == 'mean':
+        denom = im_true.mean()
+    else:
+        raise ValueError("Unsupported norm_type")
+    return np.sqrt(compare_mse(im_true, im_test)) / denom
 
 if __name__ == "__main__":
     img_rows, img_cols, batch_size = 224, 224, 32
