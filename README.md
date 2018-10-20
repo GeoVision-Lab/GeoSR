@@ -7,7 +7,7 @@ High Resolution: PSNR            |  Low Resolution: 33.32 |  Super Resolution: 3
 ### sub directories
 ```
 Geosr
-├── data
+├── src
 │   └── data_dir
 ├── dataset
 │   └── save_dir
@@ -20,6 +20,10 @@ Geosr
 │           ├── train
 │           ├── test
 │           └── val
+├── logs
+│   ├── curve
+│   ├── raw
+│   └── statistic
 ├── model_zoo
 │   └── trained_model
 ├── models
@@ -42,7 +46,7 @@ Geosr
 ...
 ```
 #### directories
-* `./data/data_dir`: original images
+* `./src/data_dir`: original images
 * `./dataset/save_dir`: croped images and related information
 * `./models`: model architecture
 * `./utils`: utilities
