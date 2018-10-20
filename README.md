@@ -60,8 +60,8 @@ Geosr
 If you use our code or any of the ideas from our paper please cite:
 ```
 @article{wu2018geoseg,
-  title={Geoseg: A Computer Vision Package for Automatic Building Segmentation and Outline Extraction},
-  author={Wu, Guangming and Guo, Zhiling},
+  title={Geosr: A Computer Vision Package for Remote Sensing Image Super Resolution},
+  author={Guo, Zhiling and Wu, Guangming},
   journal={arXiv preprint arXiv:1809.03175},
   year={2018}
 }
