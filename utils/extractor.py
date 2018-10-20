@@ -138,7 +138,7 @@ class Extractor(Extractor_Save):
             _info = [os.path.splitext(self.src_name)[0] + '_{}.png'.format(i) for i in range(len(X_slices))]
             _infos.extend(_info)
             # save slices
-            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "image")            
+            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")            
             
         _file = os.path.join(self.save_dir, 'statistic.csv')
         pd.DataFrame(_statistics,
@@ -149,7 +149,7 @@ class Extractor(Extractor_Save):
         
         infos['id'] = _infos
         self.save_infos(infos)
-        self.split_dir('image')
+        self.split_dir('images')
 
     def extract_by_random_slide(self):
         """
@@ -161,7 +161,7 @@ class Extractor(Extractor_Save):
         if os.path.exists(self.save_dir):
             shutil.rmtree(self.save_dir)
         os.makedirs(self.save_dir)
-        print("Processing via sliding window with stride")
+        print("Processing via randomly sliding window")
         _statistics = []
         _infos = []
         random.seed(self.seed)
@@ -188,7 +188,7 @@ class Extractor(Extractor_Save):
             _info = [os.path.splitext(self.src_name)[0] + '_{}.png'.format(i) for i in range(len(X_slices))]
             _infos.extend(_info)
             # save slices
-            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "image")            
+            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")            
             
         _file = os.path.join(self.save_dir, 'statistic.csv')
         pd.DataFrame(_statistics,
@@ -199,7 +199,7 @@ class Extractor(Extractor_Save):
         
         infos['id'] = _infos
         self.save_infos(infos)
-        self.split_dir('image')
+        self.split_dir('images')
         
 if __name__ == "__main__":
     # ====================== parameter initialization ======================= #
@@ -213,7 +213,7 @@ if __name__ == "__main__":
                         help='img rows for croping. Default=224 ')
     parser.add_argument('--img_cols', type=int, default=224,
                         help='img cols for croping. Default=224 ')
-    parser.add_argument('--nb_crop', type=int, default=400,
+    parser.add_argument('--nb_crop', type=int, default=500,
                         help='number of random crops. Default=400 ')
     parser.add_argument('--seed', type=int, default=123,
                         help='random seed to use. Default=123 ')
