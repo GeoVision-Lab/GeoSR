@@ -48,12 +48,13 @@ Geosr
 #### directories
 * `./src/data_dir`: original images
 * `./dataset/save_dir`: croped images and related information
+* `./model_zoo`: pretrained and trained models
 * `./models`: model architecture
 * `./utils`: utilities
 
 #### scripts
-* `extractor.py`: Extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
-* `preprocess.py`: Data augmentation
+* `extractor.py`: extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
+* `preprocess.py`: data augmentation
 * `loader.py`: load images from `./data/data_dir` with data augmentation
 
 ## Model Architecture
