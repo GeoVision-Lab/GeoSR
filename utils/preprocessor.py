@@ -10,13 +10,11 @@ preprocessor.py
     Scalable data augmentation methods 
 """
 import os
+import random
 import sys
 sys.path.append('./utils')
 from torchvision.transforms import Compose, CenterCrop, ToTensor, Resize, FiveCrop, RandomCrop
 import torchvision.transforms.functional as TF
-import torch.utils.data as data
-import random
-from PIL import Image
 
 Utils_DIR = os.path.dirname(os.path.abspath(__file__))
 
