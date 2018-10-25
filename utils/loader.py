@@ -24,20 +24,48 @@ import warnings
 warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
+class Load_img(object):
+    def __init__(self, band_mode, filepath):
+        self.band_mode = band_mode
+        self.filepath = filepath
+    def load_img_YCbCr(self):
+        """
+        Change RGB to YCbCr
+        """
+        img = Image.open(self.filepath).convert('YCbCr')
+        y = img
+        return y
+    
+    def load_img_Y(self):
+        """
+        only use Y band from YCbCr
+        """
+        img = Image.open(self.filepath).convert('YCbCr')
+        y, _, _ = img.split()
+        return y
+    
+    def load_img_RGB(self):
+        """
+        RGB
+        """
+        img = Image.open(self.filepath)
+        y = img
+        return y
 
-def load_img(filepath):
-    """
-    the original code only choose one band
-    """
-#    img = imread(filepath)
-    img = Image.open(filepath).convert('YCbCr')
-#    y, _, _ = img.split()
-    y = img
-    return y
+    def __call__(self):
+        if self.band_mode == 'YCbCr':
+            img = self.load_img_YCbCr()
+        if self.band_mode == 'Y':
+            img = self.load_img_Y()
+        if self.band_mode == 'RGB':
+            img = self.load_img_RGB()
+        return img
+
 
 class DatasetFromFolder(data.Dataset):
-    def __init__(self, image_dir, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
+    def __init__(self, band_mode, image_dir, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
         super(DatasetFromFolder, self).__init__()
+        self.band_mode = band_mode
         self.image_filenames = [os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)]
         self.transform = transform
         self.trans_mode = aug_mode
@@ -48,7 +76,9 @@ class DatasetFromFolder(data.Dataset):
         """
         data.Dataset can make index range from 0 to len(image_filenames) iteratively
         """
-        input = load_img(self.image_filenames[index])
+        load_img = Load_img(self.band_mode, self.image_filenames[index])
+        input = load_img()
+#        input = load_img(self.image_filenames[index])
         target = input.copy()
         if self.transform:
             data_aug = DataAug(input, target, self.trans_mode, self.crop_size, self.upscale_factor)
@@ -73,34 +103,37 @@ def is_image_file(filename):
 def calculate_valid_crop_size(crop_size, upscale_factor):
     return crop_size - (crop_size % upscale_factor)
 
-def get_training_set(data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_training_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     train_dir = os.path.join(root_dir, "train")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
-    return DatasetFromFolder(train_dir,
+    return DatasetFromFolder(band_mode,
+                             train_dir,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_val_set(data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_val_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     val_dir = os.path.join(root_dir, "val")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
-    return DatasetFromFolder(val_dir,
+    return DatasetFromFolder(band_mode,
+                             val_dir,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_test_set(data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     test_dir = os.path.join(root_dir, "test")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
-    return DatasetFromFolder(test_dir,
+    return DatasetFromFolder(band_mode,
+                             test_dir,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
