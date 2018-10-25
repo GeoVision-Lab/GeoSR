@@ -81,7 +81,11 @@ If you use our code or any of the ideas from our paper please cite:
 * [Python 3.5.2+](https://www.python.org/)
 * [torch 0.4.1+](https://pytorch.org/tutorials/)
 * [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
+
 ### Data
+Save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
+or
 ```
 $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 ```
+  
