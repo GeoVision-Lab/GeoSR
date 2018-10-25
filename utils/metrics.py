@@ -11,8 +11,9 @@ sys.path.append('./utils')
 
 import torch
 import numpy as np
-from datasets import *
+#from datasets import *
 from torch.utils.data import DataLoader
+from math import log10
 
 esp = 1e-5
 
@@ -205,7 +206,7 @@ def psnr(y_pred, y_true, threshold=None):
         threshold : [0.0, 1.0]
     return psnr
     """
-    return 10 * torch.log10(1 - mse(y_pred, y_true, threshold=None))
+    return 10 * log10(1 / mse(y_pred, y_true, threshold=None))
 
 def sam(y_pred, y_true, threshold=None):
     """
