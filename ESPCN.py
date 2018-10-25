@@ -28,10 +28,10 @@ def main(args):
     device = torch.device("cuda" if args.cuda else "cpu")
    
     print('===> Loading datasets')
-    train_set = get_training_set(args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
+    train_set = get_training_set(args.band_mode, args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
     # tensor, len = 600, for each : (input, target) 
-    val_set = get_val_set(args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
-    test_set = get_test_set(args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
+    val_set = get_val_set(args.band_mode, args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
+    test_set = get_test_set(args.band_mode, args.data_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
     
     datasets = [train_set, val_set]
        
@@ -50,13 +50,15 @@ def main(args):
     run.evaluating(model, test_set, "test")
     print('===> Complete training')
     run.save_checkpoint(model)
+    
 
 if __name__ == '__main__':
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch Super Res Example')
+    parser.add_argument('--band_mode', type=str, default='Y', choices=['Y', 'YCbCr', 'RGB'], help="band mode")
     parser.add_argument('--data_dir', type=str, default=os.path.join(DIR, 'dataset','map-rand'), help="data directory")
     parser.add_argument('--crop_size', type=int, default=224, help='crop size from each data. Default=224 (same to image size)')
-    parser.add_argument('--nb_channel', type=int, default=3, help="input image band")
+    parser.add_argument('--nb_channel', type=int, default=1, help="input image band")
     parser.add_argument('--upscale_factor', type=int, default=2, help="super resolution upscale factor")
     parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
     parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'], 
