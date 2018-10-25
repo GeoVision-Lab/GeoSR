@@ -25,6 +25,7 @@ Geosr
 │   ├── raw
 │   └── statistic
 ├── model_zoo
+│   ├── model_info.txt
 │   └── trained_model
 ├── models
 │   ├── blockunits.py
@@ -36,9 +37,7 @@ Geosr
 │   ├── srdensenet.py
 │   └── vdsr.py
 ├── utils
-│   ├── datasets.py
 │   ├── extractor.py
-│   ├── __init__.py
 │   ├── metrics.py
 │   ├── preprocess.py
 │   ├── runner.py
@@ -48,7 +47,7 @@ Geosr
 #### directories
 * `./src/data_dir`: original images
 * `./dataset/save_dir`: croped images and related information
-* `./model_zoo`: pretrained and trained models
+* `./model_zoo`: pretrained and trained models with related information
 * `./models`: model architecture
 * `./utils`: utilities
 
@@ -56,6 +55,13 @@ Geosr
 * `extractor.py`: extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
 * `preprocess.py`: data augmentation
 * `loader.py`: load images from `./data/data_dir` with data augmentation
+* `metrics.py`: evaluation metrics such as PSNR
+* `runner.py`: training, testing, log saving 
+
+#### files
+* `./dataset/save_dir/all.csv trian.csv test.csv val.csv`: image names(id)
+* `./dataset/save_dir/statistic.csv`: the way of obtaining data
+* `./model_zoo/model_info.txt`: model argument information, more information can be found in dir `./logs/statistic`
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
