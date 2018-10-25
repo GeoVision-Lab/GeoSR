@@ -39,7 +39,7 @@ Geosr
 ├── utils
 │   ├── extractor.py
 │   ├── metrics.py
-│   ├── preprocess.py
+│   ├── preprocessor.py
 │   ├── runner.py
 │   └── vision.py
 ...
@@ -83,9 +83,19 @@ If you use our code or any of the ideas from our paper please cite:
 * [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
 
 ### Data
-Save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
-or
 ```
 $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 ```
-  
+or  
+save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
+
+### Preprocessing
+Choose data augmentation method in `./main.py`, detailed information in `./utils/preprocessor.py` 
+```python
+parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
+parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'], 
+                        help='data augmentation mode: a, b, c, d, e')
+```
+
+
+
