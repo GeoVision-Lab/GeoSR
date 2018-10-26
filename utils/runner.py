@@ -77,15 +77,36 @@ class Base(object):
         torch.save(model, os.path.join(Checkpoint_DIR, model_name))
         print("===> Saving checkpoint: {}".format(model_name))
         
-        self.save_args(model_name)
+#        self.save_args(model_name)
+        self.save_model_info(model_name)
 
-    def save_args(self, model_name):
+#    def save_args(self, model_name):
+#        args = self.args
+#        args_info_path = os.path.join(Checkpoint_DIR, 'model_info.txt')
+#        with open(args_info_path, 'a') as f:
+#            f.write(model_name + ': \n')
+#            f.write('\t' + str(args) + ': \n') 
+#            f.close()
+    
+    def save_model_info(self, model_name):
         args = self.args
-        args_info_path = os.path.join(Checkpoint_DIR, 'model_info.txt')
-        with open(args_info_path, 'a') as f:
-            f.write(model_name + ': \n')
-            f.write('\t' + str(args) + ': \n') 
-            f.close()
+        model_info_names, model_info = [], []
+        for name in vars(args):
+            model_info_names.append(name)
+            model_info.append(eval('args.'+str(name)))
+        basic_info_names = ['date', 'method']
+        basic_info = [self.date, self.method]
+        model_log = pd.DataFrame([basic_info + model_info],
+                               columns=basic_info_names + model_info_names)
+
+        if os.path.exists(os.path.join(Logs_DIR, 'statistic', 'model_info.csv')):
+            logs = pd.read_csv(os.path.join(
+                Logs_DIR, 'statistic', 'model_info.csv'))
+        else:
+            logs = pd.DataFrame([])
+        logs = logs.append(model_log, ignore_index=True)
+        logs.to_csv(os.path.join(Logs_DIR, 'statistic',
+                                 'model_info.csv'), index=False)
         
         
     def learning_curve(self, labels=["train_loss", "train_psnr", "val_loss", "val_psnr"]):
@@ -253,10 +274,11 @@ class Trainer(Base):
 
         # recording performance of the model
         nb_samples = steps * args.batch_size
+        fps = nb_samples / _time
         basic_info = [self.date, self.method,
-                      self.epoch, self.iter, nb_samples, _time]
+                      self.epoch, self.iter, nb_samples, _time, fps]
         basic_info_names = ['date', 'method', 'epochs',
-                            'iters', 'nb_samples', 'time(sec)']
+                            'iters', 'nb_samples', 'time(sec)', 'fps']
 
         perform = [round(idx / steps, 3)
                    for idx in [psnr]]

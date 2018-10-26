@@ -17,6 +17,7 @@ sys.path.append(os.path.join('..', Utils_DIR))
 import torch.utils.data as data
 import argparse
 from PIL import Image
+import matplotlib.pyplot as plt
 from preprocessor import DataAug
 import torchvision.transforms.functional as TF
 
@@ -33,8 +34,7 @@ class Load_img(object):
         Change RGB to YCbCr
         """
         img = Image.open(self.filepath).convert('YCbCr')
-        y = img
-        return y
+        return img
     
     def load_img_Y(self):
         """
@@ -48,9 +48,9 @@ class Load_img(object):
         """
         RGB
         """
-        img = Image.open(self.filepath)
-        y = img
-        return y
+#        img = plt.imread(self.filepath)[:,:,:3]
+        img  = Image.open(self.filepath).convert('RGB')
+        return img
 
     def __call__(self):
         if self.band_mode == 'YCbCr':
@@ -60,7 +60,6 @@ class Load_img(object):
         if self.band_mode == 'RGB':
             img = self.load_img_RGB()
         return img
-
 
 class DatasetFromFolder(data.Dataset):
     def __init__(self, band_mode, image_dir, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
