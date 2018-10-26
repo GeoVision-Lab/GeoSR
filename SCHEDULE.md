@@ -58,3 +58,7 @@ new metrics need to be added
 can be conducted
 2. ESPCN.py
 optimized according to runner.py
+
+## 2018/10/28
+1. change runner
+2. arrange result and visualization
