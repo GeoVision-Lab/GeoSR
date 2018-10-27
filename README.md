@@ -24,8 +24,11 @@ Geosr
 │   ├── curve
 │   ├── raw
 │   └── statistic
+│       ├── model_info.csv
+│       ├── train.csv
+│       ├── test.csv
+│       └── val.csv
 ├── model_zoo
-│   ├── model_info.txt
 │   └── trained_model
 ├── models
 │   ├── blockunits.py
@@ -55,13 +58,14 @@ Geosr
 * `extractor.py`: extract crops from big images saved in `./data/data_dir` with different methods, save crops and related information in `./dataset/save_dir`
 * `preprocess.py`: data augmentation
 * `loader.py`: load images from `./data/data_dir` with data augmentation
-* `metrics.py`: evaluation metrics such as PSNR
+* `metrics.py`: evaluation metrics such as PSNR, SSIM, NRMSE, VIFP
 * `runner.py`: training, testing, log saving 
 
 #### files
 * `./dataset/save_dir/all.csv trian.csv test.csv val.csv`: image names(id)
 * `./dataset/save_dir/statistic.csv`: the way of obtaining data
-* `./model_zoo/model_info.txt`: model argument information, more information can be found in dir `./logs/statistic`
+* `./logs/statistic/model_info.csv`: model argument information
+* `./logs/statistic/trian.csv test.csv val.csv` final statistic result and parameter information for related model
 
 ## Model Architecture
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
