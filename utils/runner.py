@@ -45,7 +45,12 @@ class Base(object):
         self.epoch = 0
         self.iter = 0
         self.logs = []
-        self.headers = ["epoch", "iter", "train_loss", "train_psnr", "train_time(sec)", "train_fps", "val_loss", "val_psnr", "val_time(sec)", "val_fps"]
+        """
+        metrics
+        psnr, nrmse, ssim, vifp, fsim
+        """
+        self.headers = ["epoch", "iter", "train_loss", "train_psnr", "train_ssim", "train_nrmse", "train_time(sec)", "train_fps",\
+                        "val_loss", "val_psnr", "val_ssim", "val_nrmse", "val_time(sec)", "val_fps", ]
 
     def logging(self, verbose=True):
         self.logs.append([self.epoch, self.iter] +
@@ -57,7 +62,6 @@ class Base(object):
     def save_log(self):
         if not os.path.exists(os.path.join(Logs_DIR, 'raw')):
             os.makedirs(os.path.join(Logs_DIR, 'raw'))
-
         self.logs = pd.DataFrame(self.logs,
                                  columns=self.headers)
 
@@ -165,7 +169,10 @@ class Trainer(Base):
             data_loader = DataLoader(dataset=datasets[0], batch_size=args.batch_size, 
                                      num_workers=args.threads, shuffle=True)
             batch_iterator = iter(data_loader)
-            epoch_loss, epoch_psnr = 0, 0
+            """
+            metrics
+            """
+            epoch_loss, epoch_psnr= 0, 0
             for step in range(steps):
                 self.iter += 1
                 if self.iter > args.iters:
@@ -182,8 +189,14 @@ class Trainer(Base):
                 net.optimizer.zero_grad()
                 loss.backward()
                 net.optimizer.step()
+                """
+                metrics
+                """
                 epoch_loss += loss.item()
                 epoch_psnr += metrics.psnr(gen_y.data, y.data)
+#                epoch_nrmse += metrics.nrmse(gen_y.data, y.data)
+#                epoch_ssim += metrics.ssim(gen_y.data, y.data)
+#                epoch_vifp += metrics.vifp(gen_y.data, y.data)
 
 #                print("===> Epoch[{}]({}/{}): Loss: {:.4f}; \t PSNR: {:.4f}"
 #                      .format(epoch, step+1, steps, loss.item(), metrics.psnr(gen_y.data, y.data)))
@@ -192,7 +205,15 @@ class Trainer(Base):
                 if self.iter % args.iter_interval == 0:
                     _time = time.time() - start
                     nb_samples = args.iter_interval * args.batch_size
-                    train_log = [loss.item(), metrics.psnr(gen_y.data, y.data), _time, nb_samples / _time]
+                    """
+                    metrics
+                    """
+                    loss_log = loss.item()
+                    psnr_log = metrics.psnr(gen_y.data, y.data)
+                    nrmse_log = metrics.nrmse(gen_y.data, y.data)
+                    ssim_log = metrics.ssim(gen_y.data, y.data)
+#                    vifp_log = metrics.ssim(gen_y.data, y.data)                    
+                    train_log = [loss_log, psnr_log, nrmse_log, ssim_log, _time, nb_samples / _time]
 #                    train_log = [log_loss / args.iter_interval, log_psnr /
 #                                 args.iter_interval, _time, nb_samples / _time]
                     self.train_log = [round(x, 3) for x in train_log]
@@ -203,7 +224,10 @@ class Trainer(Base):
 #                    log_loss, log_psnr = 0, 0
             print("===> Epoch {} Complete: Avg. Loss: {:.4f}; \t Avg. PSNR: {:.4f}"
                   .format(epoch, epoch_loss / steps, epoch_psnr / steps))
-            epoch_loss, epoch_psnr = 0, 0
+            """
+            metrics
+            """
+            epoch_loss, epoch_psnr = 0, 0 
 
     def validating(self, model, dataset):
         """
@@ -214,7 +238,10 @@ class Trainer(Base):
           return [val_mse, val_loss]
         """
         args = self.args
-        val_loss, val_psnr = 0, 0
+        """
+        metrics
+        """
+        val_loss, val_psnr, val_nrmse, val_ssim = 0, 0, 0, 0
         data_loader = DataLoader(dataset=dataset, batch_size=args.testbatch_size, num_workers=args.threads,
                                  shuffle=False)
         batch_iterator = iter(data_loader)
@@ -223,21 +250,26 @@ class Trainer(Base):
         start = time.time()
         for step in range(steps):
             x, y = next(batch_iterator)
-
             x = x.to(self.device)
-            y = y.to(self.device)
- 
+            y = y.to(self.device) 
             # calculate pixel accuracy of generator
             gen_y = model(x)
-
+            """
+            metrics
+            """
             val_loss += F.mse_loss(gen_y, y).item()
             val_psnr += metrics.psnr(gen_y.data, y.data)
-#            print(metrics.psnr(gen_y.data, y.data))
+            val_nrmse += metrics.nrmse(gen_y.data, y.data)
+            val_ssim += metrics.ssim(gen_y.data, y.data)
+#            val_vifp += metrics.vifp(gen_y.data, y.data)
 
         _time = time.time() - start
         nb_samples = steps * args.batch_size
+        """
+        metrics
+        """
         val_log = [val_loss / steps, val_psnr /
-                   steps, _time, nb_samples / _time]
+                   steps, val_nrmse/steps, val_ssim/steps, _time, nb_samples / _time]
         self.val_log = [round(x, 3) for x in val_log]
 
     def evaluating(self, model, dataset, split):
@@ -250,7 +282,11 @@ class Trainer(Base):
         """
         args = self.args
 #        oa, precision, recall, f1, jac, kappa = 0, 0, 0, 0, 0, 0
-        psnr = 0
+        """
+        metrics
+        """
+#        psnr, nrmse, ssim, vifp, fsim
+        psnr, nrmse, ssim = 0, 0, 0
         model.eval()
         data_loader = DataLoader(dataset, args.batch_size, num_workers=4,
                                  shuffle=False)
@@ -264,8 +300,14 @@ class Trainer(Base):
                 x = x.cuda()
                 y = y.cuda()
             # calculate pixel accuracy of generator
+            """
+            metrics
+            """
             gen_y = model(x)
             psnr += metrics.psnr(gen_y.data, y.data)
+            nrmse += metrics.nrmse(gen_y.data, y.data)
+            ssim += metrics.ssim(gen_y.data, y.data)
+#            vifp += metrics.vifp(gen_y.data, y.data)
 
         _time = time.time() - start
 
@@ -278,11 +320,13 @@ class Trainer(Base):
         basic_info = [self.date, self.method,
                       self.epoch, self.iter, nb_samples, _time, fps]
         basic_info_names = ['date', 'method', 'epochs',
-                            'iters', 'nb_samples', 'time(sec)', 'fps']
-
+                            'iters', 'nb_samples', 'time(sec)', 'fps']        
+        """
+        metrics
+        """
         perform = [round(idx / steps, 3)
-                   for idx in [psnr]]
-        perform_names = ["psnr"]
+                   for idx in [psnr, nrmse, ssim]]
+        perform_names = ['psnr', 'nrmse', 'ssim']
         cur_log = pd.DataFrame([basic_info + perform],
                                columns=basic_info_names + perform_names)
         # save performance
