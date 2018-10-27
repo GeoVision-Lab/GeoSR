@@ -14,6 +14,11 @@ import numpy as np
 #from datasets import *
 from torch.utils.data import DataLoader
 from math import log10
+import pytorch_msssim
+from pysptools import distance
+import numpy
+import scipy.signal
+import scipy.ndimage
 
 esp = 1e-5
 
@@ -208,55 +213,87 @@ def psnr(y_pred, y_true, threshold=None):
     """
     return 10 * log10(1 / mse(y_pred, y_true, threshold=None))
 
-def sam(y_pred, y_true, threshold=None):
+def nrmse(y_true, y_pred, norm_type='min-max'):
+    
     """
-    Spectral Angle Mapper
-    Calculates the angle in spectral space between pixels and a set of reference spectra (endmembers) 
-        for image classification based on spectral similarity. 
+    https://github.com/scikit-image/scikit-image/blob/master/skimage/measure/simple_metrics.py#L46
     """
-
-def compare_nrmse(im_true, im_test, norm_type='Euclidean'):
-    """Compute the normalized root mean-squared error (NRMSE) between two
-    images.
-    Parameters
-    ----------
-    im_true : ndarray
-        Ground-truth image.
-    im_test : ndarray
-        Test image.
-    norm_type : {'Euclidean', 'min-max', 'mean'}
-        Controls the normalization method to use in the denominator of the
-        NRMSE.  There is no standard method of normalization across the
-        literature [1]_.  The methods available here are as follows:
-        - 'Euclidean' : normalize by the averaged Euclidean norm of
-          ``im_true``::
-              NRMSE = RMSE * sqrt(N) / || im_true ||
-          where || . || denotes the Frobenius norm and ``N = im_true.size``.
-          This result is equivalent to::
-              NRMSE = || im_true - im_test || / || im_true ||.
-        - 'min-max'   : normalize by the intensity range of ``im_true``.
-        - 'mean'      : normalize by the mean of ``im_true``
-    Returns
-    -------
-    nrmse : float
-        The NRMSE metric.
-    References
-    ----------
-    .. [1] https://en.wikipedia.org/wiki/Root-mean-square_deviation
-    """
-    _assert_compatible(im_true, im_test)
-    im_true, im_test = _as_floats(im_true, im_test)
-
     norm_type = norm_type.lower()
     if norm_type == 'euclidean':
-        denom = np.sqrt(np.mean((im_true*im_true), dtype=np.float64))
+        denom = np.sqrt(np.mean((y_pred*y_true), dtype=np.float64))
     elif norm_type == 'min-max':
-        denom = im_true.max() - im_true.min()
+        denom = y_true.max() - y_true.min()
     elif norm_type == 'mean':
-        denom = im_true.mean()
+        denom = y_true.mean()
     else:
         raise ValueError("Unsupported norm_type")
-    return np.sqrt(compare_mse(im_true, im_test)) / denom
+    denom_float = np.float(denom)
+    mse_float = np.float(mse(y_true, y_pred))
+    return np.sqrt(mse_float) / denom_float
+#    return psnr(y_true, y_pred)
+
+def ssim(y_true, y_pred):
+    """
+    https://github.com/jorge-pessoa/pytorch-msssim
+    """
+    m = pytorch_msssim.MSSSIM()
+    ssim_tensor = m(y_true, y_pred)
+    return np.float(ssim_tensor)
+      
+def compute_fsim(img0, img1, nlevels=5, nwavelets=16, L=None):
+    """
+    https://github.com/tomography/xdesign/blob/master/xdesign/metrics.py
+    """
+
+def vifp(ref, dist):
+    ref, dist = np.array(ref), np.array(dist)
+    sigma_nsq=2
+    eps = 1e-10
+
+    num = 0.0
+    den = 0.0
+    for scale in range(1, 5):
+       
+        N = 2**(4-scale+1) + 1
+        sd = N/5.0
+
+        if (scale > 1):
+            ref = scipy.ndimage.gaussian_filter(ref, sd)
+            dist = scipy.ndimage.gaussian_filter(dist, sd)
+            ref = ref[::2, ::2]
+            dist = dist[::2, ::2]
+                
+        mu1 = scipy.ndimage.gaussian_filter(ref, sd)
+        mu2 = scipy.ndimage.gaussian_filter(dist, sd)
+        mu1_sq = mu1 * mu1
+        mu2_sq = mu2 * mu2
+        mu1_mu2 = mu1 * mu2
+        sigma1_sq = scipy.ndimage.gaussian_filter(ref * ref, sd) - mu1_sq
+        sigma2_sq = scipy.ndimage.gaussian_filter(dist * dist, sd) - mu2_sq
+        sigma12 = scipy.ndimage.gaussian_filter(ref * dist, sd) - mu1_mu2
+        
+        sigma1_sq[sigma1_sq<0] = 0
+        sigma2_sq[sigma2_sq<0] = 0
+        
+        g = sigma12 / (sigma1_sq + eps)
+        sv_sq = sigma2_sq - g * sigma12
+        
+        g[sigma1_sq<eps] = 0
+        sv_sq[sigma1_sq<eps] = sigma2_sq[sigma1_sq<eps]
+        sigma1_sq[sigma1_sq<eps] = 0
+        
+        g[sigma2_sq<eps] = 0
+        sv_sq[sigma2_sq<eps] = 0
+        
+        sv_sq[g<0] = sigma2_sq[g<0]
+        g[g<0] = 0
+        sv_sq[sv_sq<=eps] = eps
+        
+        num += numpy.sum(numpy.log10(1 + g * g * sigma1_sq / (sv_sq + sigma_nsq)))
+        den += numpy.sum(numpy.log10(1 + sigma1_sq / sigma_nsq))
+        
+    result = num/den
+    return result
 
 if __name__ == "__main__":
     img_rows, img_cols, batch_size = 224, 224, 32
