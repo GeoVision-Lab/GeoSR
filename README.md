@@ -94,11 +94,11 @@ or
 save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
 
 ### Preprocessing
-#### Band choose
+__Band choose__  
 ```python
 parser.add_argument('--band_mode', type=str, default='Y', choices=['Y', 'YCbCr', 'RGB'], help="band mode")
 ```
-#### Data augmentation
+__Data augmentation__  
 Choose data augmentation method in `./main.py`, detailed information in `./utils/preprocessor.py` 
 ```python
 parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
