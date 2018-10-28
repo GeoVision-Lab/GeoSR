@@ -72,10 +72,10 @@ class Base(object):
         if self.args.cuda:
             model.cpu()
         if name:
-            model_name = "{}_{}_{}_{}_{}.pth".format(
-                self.method, name, self.args.trigger, self.args.nEpochs, self.date)
-        model_name = "{}_{}_{}_{}.pth".format(
-            self.method, self.args.trigger, self.args.nEpochs, self.date)
+            model_name = "up{}_{}_{}_{}_{}_{}.pth".format(
+                self.args.upscale_factor, self.method, name, self.args.trigger, self.args.nEpochs, self.date)
+        model_name = "up{}_{}_{}_{}_{}.pth".format(
+            self.args.upscale_factor, self.method, self.args.trigger, self.args.nEpochs, self.date)
         if not os.path.exists(Checkpoint_DIR):
             os.mkdir(Checkpoint_DIR)
         torch.save(model, os.path.join(Checkpoint_DIR, model_name))
@@ -304,9 +304,9 @@ class Trainer(Base):
             metrics
             """
             gen_y = model(x)
-            psnr += metrics.psnr(gen_y.data, y.data)
-            nrmse += metrics.nrmse(gen_y.data, y.data)
-            ssim += metrics.ssim(gen_y.data, y.data)
+            psnr += metrics.psnr(gen_y, y)
+            nrmse += metrics.nrmse(gen_y, y)
+            ssim += metrics.ssim(gen_y, y)
 #            vifp += metrics.vifp(gen_y.data, y.data)
 
         _time = time.time() - start
