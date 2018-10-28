@@ -30,7 +30,7 @@ Geosr
 │       └── val.csv
 ├── model_zoo
 │   └── trained_model
-├── models
+├── archs
 │   ├── blockunits.py
 │   ├── drcn.py
 │   ├── espcn.py
@@ -51,7 +51,7 @@ Geosr
 * `./src/data_dir`: original images
 * `./dataset/save_dir`: croped images and related information
 * `./model_zoo`: pretrained and trained models with related information
-* `./models`: model architecture
+* `./archs`: model architectures
 * `./utils`: utilities
 
 #### scripts
@@ -59,7 +59,7 @@ Geosr
 * `preprocess.py`: data augmentation
 * `loader.py`: load images from `./data/data_dir` with data augmentation
 * `metrics.py`: evaluation metrics such as PSNR, SSIM, NRMSE, VIFP
-* `runner.py`: training, testing, log saving 
+* `runner.py`: training, testing, log saving
 
 #### files
 * `./dataset/save_dir/all.csv trian.csv test.csv val.csv`: image names(id)
@@ -67,8 +67,8 @@ Geosr
 * `./logs/statistic/model_info.csv`: model argument information
 * `./logs/statistic/trian.csv test.csv val.csv` final statistic result and parameter information for related model
 
-## Model Architecture
-[Here](https://gitlab.com/Chokurei/geosr/tree/master/models)
+## Model Architectures
+[Here](https://gitlab.com/Chokurei/geosr/tree/master/archs)
 
 ## Get Started
 ### Reference
@@ -99,12 +99,9 @@ __Band choose__
 parser.add_argument('--band_mode', type=str, default='Y', choices=['Y', 'YCbCr', 'RGB'], help="band mode")
 ```
 __Data augmentation__  
-Choose data augmentation method in `./main.py`, detailed information in `./utils/preprocessor.py` 
+Choose data augmentation method in `./main.py`, detailed information in `./utils/preprocessor.py`
 ```python
-parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
-parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'], 
+parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not')
+parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'],
                         help='data augmentation mode: a, b, c, d, e')
 ```
-
-
-
