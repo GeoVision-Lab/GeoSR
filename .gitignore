@@ -7,3 +7,4 @@ utils/__pycache__/
 .ipynb_checkpoints/*
 .fuse_hidden*
 *.pth
+*.pyc
