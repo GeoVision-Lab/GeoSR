@@ -122,11 +122,20 @@ class Base(object):
             "font.family": "Times New Roman",
             "font.serif": ["Times", "Palatino", "serif"]})
         
-        for _label in labels:
-            
-            plt.plot(self.logs[self.args.trigger],
-                     self.logs[_label], label=_label)
-        plt.ylabel("Loss / PSNR")
+#        for _label in labels:
+#            
+#            plt.plot(self.logs[self.args.trigger],
+#                     self.logs[_label], label=_label)
+        plt.plot(self.logs[self.args.trigger],
+                 self.logs[labels[0]], label=labels[0])        
+        plt.plot(self.logs[self.args.trigger],
+                 self.logs[labels[1]]/100, label=labels[1])
+        plt.plot(self.logs[self.args.trigger],
+                 self.logs[labels[2]], label=labels[2])
+        plt.plot(self.logs[self.args.trigger],
+                 self.logs[labels[3]]/100, label=labels[3])
+
+        plt.ylabel("Loss & PSNR/100")
         if self.args.trigger == 'epoch':
             plt.xlabel("Epochs")
         else:
@@ -135,7 +144,7 @@ class Base(object):
         # remove top&left line
         # sns.despine()
         plt.legend(bbox_to_anchor=(1.01, 1), loc=2, borderaxespad=0.)
-        plt.savefig(os.path.join(Logs_DIR, 'curve', '{}_{}_{}_{}.png'.format(self.method, self.args.trigger, self.args.nEpochs, self.date)),
+        plt.savefig(os.path.join(Logs_DIR, 'curve', 'up{}_{}_{}_{}_{}.png'.format(self.args.upscale_factor, self.method, self.args.trigger, self.args.nEpochs, self.date)),
                     format='png', bbox_inches='tight', dpi=1200)
         #plt.savefig('curve/{}_curve.eps'.format(fig_title), format='eps', bbox_inches='tight', dpi=1200)
 
