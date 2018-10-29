@@ -13,7 +13,7 @@ import argparse
 import os
 import torch
 import torch.optim as optim
-from models.espcn import ESPCN
+from archs.espcn import ESPCN
 from utils.loader import get_training_set, get_val_set, get_test_set
 from utils.runner import Trainer
 
@@ -66,12 +66,12 @@ if __name__ == '__main__':
     parser.add_argument('--base_kernel', type=int, default=64, help="base kernel")
     parser.add_argument('--batch_size', type=int, default=64, help='training batch size')
     parser.add_argument('--testbatch_size', type=int, default=10, help='testing batch size')
-    parser.add_argument('--nEpochs', type=int, default=10, help='number of epochs to train for')
+    parser.add_argument('--nEpochs', type=int, default=100, help='number of epochs to train for')
     parser.add_argument('--lr', type=float, default=0.01, help='Learning Rate. Default=0.01')
     
     parser.add_argument('--trigger', type=str, default='epoch', choices=['epoch', 'iter'],
                         help='trigger type for logging')
-    parser.add_argument('--interval', type=int, default=2,
+    parser.add_argument('--interval', type=int, default=10,
                         help='interval for logging')
     
 #    parser.add_argument('--cuda', action='store_true', help='use cuda?')
