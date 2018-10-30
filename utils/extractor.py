@@ -53,13 +53,20 @@ class Extractor_Save(object):
 
     def save_slices(self, img_slices, img_name, folder):
         """
-        saved images will be move to slitted dir if conduct split_dir()
+        saved images will be move to splitted dir if conduct split_dir()
         """
         if not os.path.exists(os.path.join(self.save_dir, folder)):
             os.mkdir(os.path.join(self.save_dir, folder))
         for i in range(len(img_slices)):
             imsave(os.path.join(self.save_dir, folder, img_name+"_{0}.png".format(i)),
                    img_slices[i])
+            
+    def copy_slice(self, src_path, img_name, folder):
+        if not os.path.exists(os.path.join(self.save_dir, folder)):
+            os.mkdir(os.path.join(self.save_dir, folder))
+        dist_path = os.path.join(self.save_dir, folder, img_name)
+        shutil.copyfile(src_path, os.path.join(self.save_dir, dist_path))
+            
             
     def split_dir(self, folder):
         """
@@ -151,6 +158,34 @@ class Extractor(Extractor_Save):
         self.save_infos(infos)
         self.split_dir('images')
 
+    def extract_by_random_allocation(self):
+        """
+        random allocate images into train, val, and test without extraction or changing size
+        Save sliced picecs in ../dataset/data_dir
+        """
+        # make save dirs
+        self.save_dir = os.path.join(
+            Utils_DIR, '../dataset', self.data_dir + '-alloc')
+        if os.path.exists(self.save_dir):
+            shutil.rmtree(self.save_dir)
+        os.makedirs(self.save_dir)
+        print("Processing via randomly allocation")
+        _infos = []
+        random.seed(self.seed)
+        for self.src_name in self.src_names:
+            self.src_path = os.path.join(Utils_DIR, '../src', self.data_dir, self.src_name)
+            # copy slices from source
+            self.copy_slice(self.src_path, self.src_name, 'images')
+            
+            _info = [self.src_name]
+            _infos.extend(_info)
+        # save infos
+        infos = pd.DataFrame(columns=['id'])
+        
+        infos['id'] = _infos
+        self.save_infos(infos)
+        self.split_dir('images')
+
     def extract_by_random_slide(self):
         """
         Save sliced picecs in ../dataset/data_dir
@@ -200,20 +235,21 @@ class Extractor(Extractor_Save):
         infos['id'] = _infos
         self.save_infos(infos)
         self.split_dir('images')
+
         
 if __name__ == "__main__":
     # ====================== parameter initialization ======================= #
     parser = argparse.ArgumentParser(description='ArgumentParser')
-    parser.add_argument('--data_dir', type=str, default="map",
+    parser.add_argument('--data_dir', type=str, default="bridge",
                         help='data dir for processing')
-    parser.add_argument('--mode', type=str, default='slide-rand',
-                        choices=['slide-stride', 'slide-rand'],
+    parser.add_argument('--mode', type=str, default='alloc-rand',
+                        choices=['slide-stride', 'slide-rand', 'alloc-rand'],
                         help='croping mode: slide-stride, slide-rand ')
     parser.add_argument('--img_rows', type=int, default=224,
                         help='img rows for croping. Default=224 ')
     parser.add_argument('--img_cols', type=int, default=224,
                         help='img cols for croping. Default=224 ')
-    parser.add_argument('--nb_crop', type=int, default=500,
+    parser.add_argument('--nb_crop', type=int, default=2,
                         help='number of random crops. Default=400 ')
     parser.add_argument('--seed', type=int, default=123,
                         help='random seed to use. Default=123 ')
@@ -226,8 +262,10 @@ if __name__ == "__main__":
                                 args.seed, args.stride, )        
     if args.mode == 'slide-stride':
         extractor.extract_by_stride_slide()
-    else:    
+    if args.mode == 'slide-rand':    
         extractor.extract_by_random_slide()
+    else:
+        extractor.extract_by_random_allocation()
  
     
     
