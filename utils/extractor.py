@@ -60,14 +60,17 @@ class Extractor_Save(object):
         for i in range(len(img_slices)):
             imsave(os.path.join(self.save_dir, folder, img_name+"_{0}.png".format(i)),
                    img_slices[i])
-            
+
     def copy_slice(self, src_path, img_name, folder):
+        """
+        copy images from src_path to dist_path
+        """
         if not os.path.exists(os.path.join(self.save_dir, folder)):
             os.mkdir(os.path.join(self.save_dir, folder))
         dist_path = os.path.join(self.save_dir, folder, img_name)
         shutil.copyfile(src_path, os.path.join(self.save_dir, dist_path))
-            
-            
+
+
     def split_dir(self, folder):
         """
         split images in train, test, and val via csv file information
@@ -86,7 +89,7 @@ class Extractor_Save(object):
                 img_path = os.path.join(image_dir,''.join(img_name))
                 img_new_path = os.path.join(dir_path,''.join(img_name))
                 shutil.move(img_path, img_new_path)
-    
+
 
 class Extractor(Extractor_Save):
     """
@@ -137,23 +140,23 @@ class Extractor(Extractor_Save):
                 img_src = self.src_img[i:i + self.img_rows,
                                        j:j + self.img_cols]
                 X_slices.append(img_src)
-    
+
             _statistic = [self.src_name, len(X_slices), len(row_range), len(col_range),
                           self.img_rows, self.img_cols]
             _statistics.append(_statistic)
-            
+
             _info = [os.path.splitext(self.src_name)[0] + '_{}.png'.format(i) for i in range(len(X_slices))]
             _infos.extend(_info)
             # save slices
-            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")            
-            
+            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")
+
         _file = os.path.join(self.save_dir, 'statistic.csv')
         pd.DataFrame(_statistics,
                      columns=["img_name","nb-samples", "nb_rows", "nb_cols", "img_rows", "img_cols"]).to_csv(_file, index=False)
-        
+
         # save infos
         infos = pd.DataFrame(columns=['id'])
-        
+
         infos['id'] = _infos
         self.save_infos(infos)
         self.split_dir('images')
@@ -176,12 +179,12 @@ class Extractor(Extractor_Save):
             self.src_path = os.path.join(Utils_DIR, '../src', self.data_dir, self.src_name)
             # copy slices from source
             self.copy_slice(self.src_path, self.src_name, 'images')
-            
+
             _info = [self.src_name]
             _infos.extend(_info)
         # save infos
         infos = pd.DataFrame(columns=['id'])
-        
+
         infos['id'] = _infos
         self.save_infos(infos)
         self.split_dir('images')
@@ -216,27 +219,27 @@ class Extractor(Extractor_Save):
                 img_src = self.src_img[i:i + self.img_rows,
                                        j:j + self.img_cols]
                 X_slices.append(img_src)
-    
+
             _statistic = [self.src_name, len(X_slices), self.img_rows, self.img_cols]
             _statistics.append(_statistic)
-            
+
             _info = [os.path.splitext(self.src_name)[0] + '_{}.png'.format(i) for i in range(len(X_slices))]
             _infos.extend(_info)
             # save slices
-            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")            
-            
+            self.save_slices(X_slices, os.path.splitext(self.src_name)[0], "images")
+
         _file = os.path.join(self.save_dir, 'statistic.csv')
         pd.DataFrame(_statistics,
                      columns=["img_name","nb-samples", "img_rows", "img_cols"]).to_csv(_file, index=False)
-        
+
         # save infos
         infos = pd.DataFrame(columns=['id'])
-        
+
         infos['id'] = _infos
         self.save_infos(infos)
         self.split_dir('images')
 
-        
+
 if __name__ == "__main__":
     # ====================== parameter initialization ======================= #
     parser = argparse.ArgumentParser(description='ArgumentParser')
@@ -257,31 +260,12 @@ if __name__ == "__main__":
                         help='img cols for croping. Default=224 ')
 
     args = parser.parse_args()
-    
+
     extractor = Extractor(args.data_dir, args.img_rows, args.img_cols, args.nb_crop,
-                                args.seed, args.stride, )        
+                                args.seed, args.stride, )
     if args.mode == 'slide-stride':
         extractor.extract_by_stride_slide()
-    if args.mode == 'slide-rand':    
+    if args.mode == 'slide-rand':
         extractor.extract_by_random_slide()
     else:
         extractor.extract_by_random_allocation()
- 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
