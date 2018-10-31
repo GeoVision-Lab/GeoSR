@@ -90,6 +90,7 @@ class Base(object):
         torch.save(model, os.path.join(Checkpoint_DIR, model_name))
         print("===> Saving checkpoint: {}".format(model_name))
         self.save_model_info(model_name)
+        return model_name
     
     def save_middle_checkpoint(self, model, epoch, iteration, model_name, name=None):
         """
