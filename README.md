@@ -43,8 +43,11 @@ Geosr
 │   ├── extractor.py
 │   ├── metrics.py
 │   ├── preprocessor.py
-│   ├── runner.py
+│   ├── trainer.py
+│   ├── tester.py
 │   └── vision.py
+├── main.py
+│  
 ...
 ```
 #### directories
