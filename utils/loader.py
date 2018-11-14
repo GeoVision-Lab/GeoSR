@@ -65,7 +65,8 @@ class DatasetFromFolder(data.Dataset):
     def __init__(self, band_mode, image_dir, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
         super(DatasetFromFolder, self).__init__()
         self.band_mode = band_mode
-        self.image_filenames = [os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)]
+        self.image_filenames = sorted([os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)])
+#        self.image_filenames = [os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)]
         self.transform = transform
         self.trans_mode = aug_mode
         self.crop_size = crop_size
@@ -75,15 +76,16 @@ class DatasetFromFolder(data.Dataset):
         """
         data.Dataset can make index range from 0 to len(image_filenames) iteratively
         """
+#        print(index)
+#        import time
+#        time.sleep(4)
         load_img = Load_img(self.band_mode, self.image_filenames[index])
+#        print(self.image_filenames[index])
         input = load_img()
-#        input = load_img(self.image_filenames[index])
         target = input.copy()
         if self.transform:
             data_aug = DataAug(input, target, self.trans_mode, self.crop_size, self.upscale_factor)
             input, target = data_aug()
-            # input: torch.Size([nb_channel, crop_size//upscale_factor, crop_size//upscale_factor])
-            # target: torch.Size([nb_channel, crop_size, crop_size])
         else:
             input = TF.center_crop(input, (self.crop_size, self.crop_size))
             input = TF.resize(input, (self.crop_size // self.upscale_factor, self.crop_size // self.upscale_factor))
@@ -126,7 +128,7 @@ def get_val_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_eval_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     test_dir = os.path.join(root_dir, "test")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
@@ -137,6 +139,18 @@ def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
+
+def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+    test_dir = data_dir
+    crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
+
+    return DatasetFromFolder(band_mode,
+                             test_dir,
+                             transform=aug,
+                             aug_mode=aug_mode,
+                             crop_size=crop_size, 
+                             upscale_factor=upscale_factor)
+
 
 if __name__ == "__main__":
     print('Load training, test, and validation data from dataset/data_dir, \
