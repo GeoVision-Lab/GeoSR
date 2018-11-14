@@ -25,7 +25,10 @@ import copy
 import numpy as np
 from PIL import Image
 from torchvision.transforms import ToTensor
-from loader import get_real_test_set
+from loader import get_test_set, Load_img
+from preprocessor import DataAug
+import torchvision.transforms.functional as TF
+
 
 Utils_DIR = os.path.dirname(os.path.abspath(__file__))
 DIR = os.path.join(Utils_DIR, '..')
@@ -48,7 +51,7 @@ def load_middle_checkpoint(middle_checkpoint_dir, name):
     print("Loading middel checkpoint: {}".format(name))
     return torch.load("{}/{}/{}".format(Checkpoint_DIR, middle_checkpoint_dir, name))
 
-class Result_Generator(object):
+class Result_Generator_Without_Truth(object):
     def __init__(self, args, img_path, model):
         self.args = args
         self.img_path = img_path
@@ -75,7 +78,7 @@ class Result_Generator(object):
         out_img_cr = cr.resize(out_img_y.size, Image.BICUBIC)
         out_img = Image.merge('YCbCr', [out_img_y, out_img_cb, out_img_cr]).convert('RGB') 
         return out_img
-    
+        
     def YCbCr_to_RGB(self):
         img_path = self.img_path
         model = self.model
@@ -94,7 +97,7 @@ class Result_Generator(object):
         out_img = np.transpose(out_img, (1,2,0)) 
         out_img = Image.fromarray(np.uint8(out_img), mode='YCbCr')
         out_img = out_img.convert('RGB')
-        return out_img     
+        return out_img        
     
     def RGB_to_RGB(self):
         img_path = self.img_path
@@ -119,18 +122,74 @@ class Result_Generator(object):
             return self.YCbCr_to_RGB()
         if self.args.band_mode == 'RGB':
             return self.RGB_to_RGB()
+
+class Result_Generator_With_Truth(object):
+    def __init__(self, args, img_path, model):
+        self.args = args
+        self.img_path = img_path
+        self.model = model
+#        self.output_path = output_path
+    def Y_to_RGB(self):
+        args = self.args
+        img_path = self.img_path
+        model = self.model
+        
+        img_to_tensor = ToTensor()
+        hr_img = Image.open(img_path).convert('YCbCr')
+        hr_img_y = hr_img.split()[0]
+        hr_img_y_tensor = img_to_tensor(hr_img_y).view(1, -1, hr_img_y.size[1], hr_img_y.size[0])
+        hr_img_Cb = hr_img.split()[1]
+        hr_img_Cr = hr_img.split()[2]
+        
+        lr_img_y = TF.resize(hr_img_y, ( hr_img_y.size[0]// args.upscale_factor, hr_img_y.size[1] // args.upscale_factor))
+        lr_img_y_tensor = img_to_tensor(lr_img_y).view(1, -1, lr_img_y.size[1], lr_img_y.size[0])
+        input = lr_img_y_tensor
+        
+        if args.cuda:
+            model = model.cuda()
+            input = input.cuda()                    
+        sr_img_y_tensor = model(input)
+        sr_img_y_tensor = sr_img_y_tensor.cpu()        
+        """
+        metrics
+        """        
+        psnr = metrics.psnr(sr_img_y_tensor, hr_img_y_tensor)
+        nrmse = metrics.nrmse(sr_img_y_tensor, hr_img_y_tensor)
+        ssim = metrics.ssim(sr_img_y_tensor, hr_img_y_tensor)
+        
+        sr_img_y = sr_img_y_tensor[0].detach().numpy()        
+        sr_img_y *= 255.0
+        sr_img_y = sr_img_y.clip(0, 255)
+        sr_img_y = Image.fromarray(np.uint8(sr_img_y[0]), mode='L')        
+        sr_img_cb = hr_img_Cb
+        sr_img_cr = hr_img_Cr
+        sr_img = Image.merge('YCbCr', [sr_img_y, sr_img_cb, sr_img_cr]).convert('RGB')            
+
+        return sr_img, (psnr, ssim, nrmse)
+
+
+    def __call__(self):
+        if self.args.band_mode == 'Y':
+            return self.Y_to_RGB()
+        if self.args.band_mode == 'YCbCr':
+            return self.YCbCr_to_RGB()
+        if self.args.band_mode == 'RGB':
+            return self.RGB_to_RGB()
+        
         
 class Base(object):
     def __init__(self, args):
         self.args = args
         self.device = torch.device("cuda" if args.cuda else "cpu")
         self.logs = []
+        self.avg_logs = []
         self.test_dir = args.test_dir
         """
         metrics
         psnr, nrmse, ssim, vifp, fsim
         """
         self.headers = ["ip", "model", "psnr", "ssim", "nrmse"]
+        self.avg_headers = ["model", "psnr_avg", "ssim_avg", "nrmse_avg"]
 
     def logging(self, result_log, verbose=False):
         self.logs.append([self.ip, os.path.splitext(self.args.model_name)[0]] +
@@ -140,94 +199,145 @@ class Base(object):
                   .format(result_log[0], result_log[1], result_log[2]))
 
     def save_result_log(self):
-        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'diff_model')
-        
-        if not os.path.exists(self.result_save_dir):
-            os.makedir(self.result_save_dir)
-        self.logs = pd.DataFrame(self.logs,
-                                 columns=self.headers)
-        self.logs.to_csv(os.path.join(self.result_save_dir, "result_log.csv"), index=False)
+        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'diff_model', 'with_truth')
 
-    def save_result_log_new(self):
-        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'diff_model')
-        
         if not os.path.exists(self.result_save_dir):
             os.makedir(self.result_save_dir)
-        self.logs = pd.DataFrame(self.logs,
+        cur_log = pd.DataFrame(self.logs,
                                  columns=self.headers)
 
         if os.path.exists(os.path.join(self.result_save_dir, 'result_log.csv')):
-            print(1111111111111111)
             result_logs = pd.read_csv(os.path.join(self.result_save_dir, 'result_log.csv'))
-            print(len(result_logs))
-            result_logs.append(self.logs)
-            print(len(result_logs))
-            print(len(self.logs))
+            result_logs = result_logs.append(cur_log, ignore_index=True)
         else:
-            print(2222222222222222)
-            result_logs = self.logs
+            result_logs = cur_log
+        result_logs = result_logs.sort(['ip'])
         result_logs.to_csv(os.path.join(self.result_save_dir, "result_log.csv"), index=False)
 
+    def logging_avg(self, result_avg_log, verbose=True):
+        self.avg_logs.append([os.path.splitext(self.args.model_name)[0]] +
+                         result_avg_log)
+        if verbose:
+            print("psnr_avg:{:0.3f}, ssim_avg:{:0.3f}, nrmse_avg:{:0.3f}"
+                  .format(result_avg_log[0], result_avg_log[1], result_avg_log[2]))
 
-#        if os.path.exists(os.path.join(Logs_DIR, 'statistic', "{}.csv".format(split))):
-#            logs = pd.read_csv(os.path.join(
-#                Logs_DIR, 'statistic', "{}.csv".format(split)))
-#        else:
-#            logs = pd.DataFrame([])
-#        logs = logs.append(cur_log, ignore_index=True)
-#        logs.to_csv(os.path.join(Logs_DIR, 'statistic',
-#                                 "{}.csv".format(split)), index=False, float_format='%.3f')
-
-
+    def save_result_avg_log(self):
+        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'diff_model', 'with_truth')
         
+        if not os.path.exists(self.result_save_dir):
+            os.makedir(self.result_save_dir)
+        cur_log = pd.DataFrame(self.avg_logs,
+                                 columns=self.avg_headers)
+
+        if os.path.exists(os.path.join(self.result_save_dir, 'result_avg_log.csv')):
+            result_logs = pd.read_csv(os.path.join(self.result_save_dir, 'result_avg_log.csv'))
+            result_logs = result_logs.append(cur_log, ignore_index=True)
+        else:
+            result_logs = cur_log
+        result_logs = result_logs.sort(['model'])
+        result_logs.to_csv(os.path.join(self.result_save_dir, "result_avg_log.csv"), index=False)
+    
+    """
+    middle checkpoint
+    """
+    def middle_logging(self, result_log, checkpoint_name, verbose=False):
+        self.logs.append([self.ip, checkpoint_name] +
+                         result_log)
+        if verbose:
+            print("psnr:{:0.3f}, ssim:{:0.3f}, nrmse:{:0.3f}"
+                  .format(result_log[0], result_log[1], result_log[2]))
+            
+    def middle_logging_avg(self, result_avg_log, checkpoint_name, verbose=True):
+        self.avg_logs.append([checkpoint_name] + result_avg_log)
+        if verbose:
+            print("psnr_avg:{:0.3f}, ssim_avg:{:0.3f}, nrmse_avg:{:0.3f}"
+                  .format(result_avg_log[0], result_avg_log[1], result_avg_log[2]))        
+            
+    def save_middle_result_log(self):
+        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'middle_checkpoint',self.checkpoint_dir,'with_truth')
+
+        if not os.path.exists(self.result_save_dir):
+            os.makedirs(self.result_save_dir)
+        cur_log = pd.DataFrame(self.logs,
+                                 columns=self.headers)
+
+        if os.path.exists(os.path.join(self.result_save_dir, 'result_log.csv')):
+            result_logs = pd.read_csv(os.path.join(self.result_save_dir, 'result_log.csv'))
+            result_logs = result_logs.append(cur_log, ignore_index=True)
+        else:
+            result_logs = cur_log
+        result_logs = result_logs.sort(['ip'])
+        result_logs.to_csv(os.path.join(self.result_save_dir, "result_log.csv"), index=False)
+
+    def save_middle_result_avg_log(self):
+        self.result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(self.args.test_dir.split('/')[-3:]), 'middle_checkpoint',self.checkpoint_dir,'with_truth')
+        
+        if not os.path.exists(self.result_save_dir):
+            os.makedir(self.result_save_dir)
+        cur_log = pd.DataFrame(self.avg_logs,
+                                 columns=self.avg_headers)
+
+        if os.path.exists(os.path.join(self.result_save_dir, 'result_avg_log.csv')):
+            result_logs = pd.read_csv(os.path.join(self.result_save_dir, 'result_avg_log.csv'))
+            result_logs = result_logs.append(cur_log, ignore_index=True)
+        else:
+            result_logs = cur_log
+        result_logs = result_logs.sort(['model'])
+        result_logs.to_csv(os.path.join(self.result_save_dir, "result_avg_log.csv"), index=False)
+
 class Tester(Base):
     def testing_model(self, model_name, test_dir):
         args = self.args
-#        model_name = args.model_name       
         model = load_checkpoint(model_name)
         
         print('===> Testing')
         if args.ground_truth:
-            test_set = get_real_test_set(args.band_mode, args.test_dir, args.aug, args.aug_mode, args.crop_size, args.upscale_factor)
-            self.evaluating(model, model_name, test_set)
+            self.evaluating_model(model, model_name, test_dir)
         else:
-            img_files = os.listdir(test_dir)    
-            result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model')
+            result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model', 'with_truth')
             if not os.path.exists(result_save_dir):
                 os.makedirs(result_save_dir)
-            
+        
+            img_files = sorted(os.listdir(test_dir))
             for img_file in img_files:    
                 img_name = os.path.splitext(img_file)[0]
-                img_path = os.path.join(args.test_dir, img_file)
+                img_path = os.path.join(test_dir, img_file)
                 _model_name = os.path.splitext(model_name)[0]
                 output_file = img_name + '_' + _model_name + os.path.splitext(img_file)[1]
                 output_path = os.path.join(result_save_dir, output_file)
-                result_generator = Result_Generator(args, img_path, model)
+                result_generator = Result_Generator_Without_Truth(args, img_path, model)
                 out_img = result_generator()
                 out_img.save(output_path)
                 
     def testing_middle_checkpoint(self, model_name, test_dir):
         args = self.args
         checkpoint_dir = os.path.splitext(model_name)[0]
+        self.checkpoint_dir = checkpoint_dir
         checkpoint_path = os.path.join(DIR, 'model_zoo', checkpoint_dir)
+        
         print('===> Testing')
+        
         for checkpoint_name in os.listdir(checkpoint_path):
             model =  load_middle_checkpoint(checkpoint_dir, checkpoint_name)  
-            img_files = os.listdir(args.test_dir)
-            result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'middle_checkpoint',checkpoint_dir)
-            if not os.path.exists(result_save_dir):
-                os.makedirs(result_save_dir)
-            for img_file in img_files:    
-                img_name = os.path.splitext(img_file)[0]
-                img_path = os.path.join(args.test_dir, img_file)
-                _checkpoint_name = os.path.splitext(checkpoint_name)[0]
-                output_file = img_name + '_' + _checkpoint_name + os.path.splitext(img_file)[1]
-                output_path = os.path.join(result_save_dir, output_file)
-                result_generator = Result_Generator(args, img_path, model)
-                out_img = result_generator()
-                out_img.save(output_path)
-                
-    def evaluating(self, model, model_name, dataset):
+        
+            if args.ground_truth:    
+                self.evaluating_middle_checkpoint(model, checkpoint_name, checkpoint_dir, test_dir)
+            else:
+                result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'middle_checkpoint',checkpoint_dir,'without_truth')
+                if not os.path.exists(result_save_dir):
+                    os.makedirs(result_save_dir)
+                img_files = sorted(os.listdir(test_dir))    
+                for img_file in img_files:    
+                    img_name = os.path.splitext(img_file)[0]
+                    img_path = os.path.join(args.test_dir, img_file)
+                    _checkpoint_name = os.path.splitext(checkpoint_name)[0]
+                    output_file = img_name + '_' + _checkpoint_name + os.path.splitext(img_file)[1]
+                    output_path = os.path.join(result_save_dir, output_file)
+                    result_generator = Result_Generator_Without_Truth(args, img_path, model)
+                    out_img = result_generator()
+                    out_img.save(output_path)
+    
+    def evaluating_middle_checkpoint(self, model, checkpoint_name, checkpoint_dir, data_dir):
         """
           input:
             model: (object) pytorch model
@@ -236,7 +346,6 @@ class Tester(Base):
           return [overall_accuracy, precision, recall, f1-score, jaccard, kappa]
         """
         args = self.args
-#        oa, precision, recall, f1, jac, kappa = 0, 0, 0, 0, 0, 0
         """
         metrics
         """
@@ -244,46 +353,107 @@ class Tester(Base):
         psnr_all, nrmse_all, ssim_all = 0, 0, 0
         model.eval()
         
-        img_files = sorted(os.listdir(args.test_dir))
-        result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model')
+        result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'middle_checkpoint',checkpoint_dir,'with_truth')
         if not os.path.exists(result_save_dir):
             os.makedirs(result_save_dir)
         
-        for img_file in img_files:    
-            img_name = os.path.splitext(img_file)[0]
+        img_files = sorted(os.listdir(data_dir))
+        
+        for img_file in img_files:
+            img_name = os.path.splitext(img_file)[0]  
+            img_path = os.path.join(args.test_dir, img_file)
+            _checkpoint_name = os.path.splitext(checkpoint_name)[0]
+            output_file = img_name + '_' + _checkpoint_name + os.path.splitext(img_file)[1]
+            output_path = os.path.join(result_save_dir, output_file)
+            
+            result_generator = Result_Generator_With_Truth(args, img_path, model)
+            sr_img, (psnr, ssim, nrmse) = result_generator()
+            sr_img.save(output_path)
+            
+            """
+            metrics
+            """
+            psnr_all += psnr
+            ssim_all += ssim
+            nrmse_all += nrmse
+            
+            self.ip = img_file
+
+            self.result_log = [round(idx, 3) for idx in [psnr, nrmse, ssim]]
+            self.middle_logging(self.result_log, checkpoint_name)
+            
+            # generate lr image
+            lr_file = img_name + '_' + 'lr' + os.path.splitext(img_file)[1]
+            lr_path = os.path.join(result_save_dir, lr_file)
+            if not os.path.exists(lr_path):
+                hr_img = Image.open(img_path)
+                lr_img = hr_img.resize((hr_img.size[0]// args.upscale_factor, hr_img.size[1] // args.upscale_factor))
+                lr_img.save(lr_path)
+            
+            sr_img.save(output_path)
+        self.save_middle_result_log()
+        psnr_avg, ssim_avg, nrmse_avg   = psnr_all / len(img_files), ssim_all / len(img_files), nrmse_all / len(img_files) 
+        self.result_avg_log = [round(idx, 3) for idx in [psnr_avg, ssim_avg, nrmse_avg]]
+        self.middle_logging_avg(self.result_avg_log, checkpoint_name)
+        self.save_middle_result_avg_log()
+        
+    def evaluating_model(self, model, model_name, data_dir):
+        """
+          input:
+            model: (object) pytorch model
+            dataset: (object) dataset
+            split: (str) split of dataset in ['train', 'val', 'test']
+          return [overall_accuracy, precision, recall, f1-score, jaccard, kappa]
+        """
+        args = self.args
+        """
+        metrics
+        """
+#        psnr, nrmse, ssim, vifp, fsim
+        psnr_all, nrmse_all, ssim_all = 0, 0, 0
+        model.eval()
+        
+        result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model', 'with_truth')
+        if not os.path.exists(result_save_dir):
+            os.makedirs(result_save_dir)
+        
+        img_files = sorted(os.listdir(data_dir))
+        
+        for img_file in img_files:
+            img_name = os.path.splitext(img_file)[0]  
             img_path = os.path.join(args.test_dir, img_file)
             _model_name = os.path.splitext(model_name)[0]
             output_file = img_name + '_' + _model_name + os.path.splitext(img_file)[1]
             output_path = os.path.join(result_save_dir, output_file)
-            result_generator = Result_Generator(args, img_path, model)
-            out_img = result_generator()
-            out_img.save(output_path)        
-              
-        data_loader = DataLoader(dataset, 1, num_workers=4,
-                                 shuffle=False)
-        batch_iterator = iter(data_loader)
-        steps = len(dataset) // args.testbatch_size
-
-        for step in range(steps):
-            x, y = next(batch_iterator)
-            if args.cuda:
-                x = x.cuda()
-                y = y.cuda()
-            # calculate pixel accuracy of generator
+            
+            result_generator = Result_Generator_With_Truth(args, img_path, model)
+            sr_img, (psnr, ssim, nrmse) = result_generator()
             """
             metrics
             """
-            gen_y = model(x)
-            psnr = metrics.psnr(gen_y, y)
             psnr_all += psnr
-            nrmse = metrics.nrmse(gen_y, y)
-            nrmse_all += psnr
-            ssim = metrics.ssim(gen_y, y)
             ssim_all += ssim
-            self.ip = img_files[step]
-            """
-            metrics
-            """
+            nrmse_all += nrmse
+            
+            self.ip = img_file
+
             self.result_log = [round(idx, 3) for idx in [psnr, nrmse, ssim]]
             self.logging(self.result_log)
-        self.save_result_log_new()
+            
+            # generate lr image
+            lr_file = img_name + '_' + 'lr' + os.path.splitext(img_file)[1]
+            lr_path = os.path.join(result_save_dir, lr_file)
+            if not os.path.exists(lr_path):
+                hr_img = Image.open(img_path)
+                lr_img = hr_img.resize((hr_img.size[0]// args.upscale_factor, hr_img.size[1] // args.upscale_factor))
+                lr_img.save(lr_path)
+            
+            sr_img.save(output_path)
+        self.save_result_log()
+        psnr_avg, ssim_avg, nrmse_avg   = psnr_all / len(img_files), ssim_all / len(img_files), nrmse_all / len(img_files) 
+        self.result_avg_log = [round(idx, 3) for idx in [psnr_avg, ssim_avg, nrmse_avg]]
+        self.logging_avg(self.result_avg_log)
+        self.save_result_avg_log()
+
+
+        

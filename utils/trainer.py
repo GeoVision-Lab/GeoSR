@@ -130,7 +130,7 @@ class Base(object):
                                  'model_info.csv'), index=False)
         
         
-    def learning_curve(self, labels=["train_loss", "train_psnr", "val_loss", "val_psnr"]):
+    def learning_curve(self, labels=["train_loss", "train_psnr", "val_loss", "val_psnr"], trans = True):
         if not os.path.exists(os.path.join(Logs_DIR, "curve")):
             os.mkdir(os.path.join(Logs_DIR, "curve"))
         # set style
@@ -138,19 +138,20 @@ class Base(object):
         sns.set_style("ticks", {
             "font.family": "Times New Roman",
             "font.serif": ["Times", "Palatino", "serif"]})
-        
-#        for _label in labels:
-#            
-#            plt.plot(self.logs[self.args.trigger],
-#                     self.logs[_label], label=_label)
-        plt.plot(self.logs[self.args.trigger],
-                 self.logs[labels[0]], label=labels[0])        
-        plt.plot(self.logs[self.args.trigger],
-                 self.logs[labels[1]]/100, label=labels[1])
-        plt.plot(self.logs[self.args.trigger],
-                 self.logs[labels[2]], label=labels[2])
-        plt.plot(self.logs[self.args.trigger],
-                 self.logs[labels[3]]/100, label=labels[3])
+        if trans:
+            # for better visualization
+            plt.plot(self.logs[self.args.trigger],
+                     self.logs[labels[0]], label=labels[0])        
+            plt.plot(self.logs[self.args.trigger],
+                     self.logs[labels[1]]/100, label=labels[1])
+            plt.plot(self.logs[self.args.trigger],
+                     self.logs[labels[2]], label=labels[2])
+            plt.plot(self.logs[self.args.trigger],
+                     self.logs[labels[3]]/100, label=labels[3])
+        else:
+            for _label in labels:
+                plt.plot(self.logs[self.args.trigger],
+                         self.logs[_label], label=_label)
 
         plt.ylabel("Loss & PSNR/100")
         if self.args.trigger == 'epoch':
@@ -170,7 +171,7 @@ class Trainer(Base):
     args.iters: total iterations for all epochs
     steps: iteration per epoch 
     """
-    def training(self, net, datasets):
+    def training(self, net, datasets, verbose=False):
         """
           input:
             net: (object) model & optimizer
@@ -193,7 +194,7 @@ class Trainer(Base):
             self.epoch = epoch
             # setup data loader
             data_loader = DataLoader(dataset=datasets[0], batch_size=args.batch_size, 
-                                     num_workers=args.threads, shuffle=True)
+                                     num_workers=args.threads, shuffle=False)
             batch_iterator = iter(data_loader)
             """
             metrics
@@ -222,10 +223,10 @@ class Trainer(Base):
 #                epoch_nrmse += metrics.nrmse(gen_y.data, y.data)
 #                epoch_ssim += metrics.ssim(gen_y.data, y.data)
 #                epoch_vifp += metrics.vifp(gen_y.data, y.data)
-
-#                print("===> Epoch[{}]({}/{}): Loss: {:.4f}; \t PSNR: {:.4f}"
-#                      .format(epoch, step+1, steps, loss.item(), metrics.psnr(gen_y.data, y.data)))
-                
+                if verbose:
+                    print("===> Epoch[{}]({}/{}): Loss: {:.4f}; \t PSNR: {:.4f}"
+                          .format(epoch, step+1, steps, loss.item(), metrics.psnr(gen_y.data, y.data)))
+                    
                 # logging
                 if self.iter % args.iter_interval == 0:
                     _time = time.time() - start
