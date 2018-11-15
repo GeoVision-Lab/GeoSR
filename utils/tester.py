@@ -182,7 +182,9 @@ class Base(object):
         self.args = args
         self.device = torch.device("cuda" if args.cuda else "cpu")
         self.logs = []
+        self.middle_logs = []
         self.avg_logs = []
+        self.middle_avg_logs = []
         self.test_dir = args.test_dir
         """
         metrics
@@ -240,15 +242,16 @@ class Base(object):
     """
     middle checkpoint
     """
+    
     def middle_logging(self, result_log, checkpoint_name, verbose=False):
-        self.logs.append([self.ip, checkpoint_name] +
+        self.middle_logs.append([self.ip, checkpoint_name] +
                          result_log)
         if verbose:
             print("psnr:{:0.3f}, ssim:{:0.3f}, nrmse:{:0.3f}"
                   .format(result_log[0], result_log[1], result_log[2]))
             
-    def middle_logging_avg(self, result_avg_log, checkpoint_name, verbose=True):
-        self.avg_logs.append([checkpoint_name] + result_avg_log)
+    def logging_middle_avg(self, result_avg_log, checkpoint_name, verbose=True):
+        self.middle_avg_logs.append([checkpoint_name] + result_avg_log)
         if verbose:
             print("psnr_avg:{:0.3f}, ssim_avg:{:0.3f}, nrmse_avg:{:0.3f}"
                   .format(result_avg_log[0], result_avg_log[1], result_avg_log[2]))        
@@ -258,7 +261,7 @@ class Base(object):
 
         if not os.path.exists(self.result_save_dir):
             os.makedirs(self.result_save_dir)
-        cur_log = pd.DataFrame(self.logs,
+        cur_log = pd.DataFrame(self.middle_logs,
                                  columns=self.headers)
 
         if os.path.exists(os.path.join(self.result_save_dir, 'result_log.csv')):
@@ -274,7 +277,7 @@ class Base(object):
         
         if not os.path.exists(self.result_save_dir):
             os.makedir(self.result_save_dir)
-        cur_log = pd.DataFrame(self.avg_logs,
+        cur_log = pd.DataFrame(self.middle_avg_logs,
                                  columns=self.avg_headers)
 
         if os.path.exists(os.path.join(self.result_save_dir, 'result_avg_log.csv')):
@@ -319,7 +322,6 @@ class Tester(Base):
         
         for checkpoint_name in os.listdir(checkpoint_path):
             model =  load_middle_checkpoint(checkpoint_dir, checkpoint_name)  
-        
             if args.ground_truth:    
                 self.evaluating_middle_checkpoint(model, checkpoint_name, checkpoint_dir, test_dir)
             else:
@@ -378,9 +380,8 @@ class Tester(Base):
             nrmse_all += nrmse
             
             self.ip = img_file
-
             self.result_log = [round(idx, 3) for idx in [psnr, nrmse, ssim]]
-            self.middle_logging(self.result_log, checkpoint_name)
+            self.middle_logging(self.result_log, _checkpoint_name)
             
             # generate lr image
             lr_file = img_name + '_' + 'lr' + os.path.splitext(img_file)[1]
@@ -394,8 +395,10 @@ class Tester(Base):
         self.save_middle_result_log()
         psnr_avg, ssim_avg, nrmse_avg   = psnr_all / len(img_files), ssim_all / len(img_files), nrmse_all / len(img_files) 
         self.result_avg_log = [round(idx, 3) for idx in [psnr_avg, ssim_avg, nrmse_avg]]
-        self.middle_logging_avg(self.result_avg_log, checkpoint_name)
+        self.logging_middle_avg(self.result_avg_log, _checkpoint_name)
         self.save_middle_result_avg_log()
+        self.middle_logs = []
+        self.middle_avg_logs = []
         
     def evaluating_model(self, model, model_name, data_dir):
         """
