@@ -138,7 +138,8 @@ parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c',
 ```
 ## Logs
 ### Learning Curve
-![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png)
+| ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_FSRCNN_epoch_100_Nov17_00](/uploads/5bc8be6f3149ee173b1d6fbeff29bef2/up2_FSRCNN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
+|:-----------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
 
 ## Results
 ### Model difference (diff_model)
