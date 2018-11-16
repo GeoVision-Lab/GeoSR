@@ -136,7 +136,11 @@ parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=
 parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'],
                         help='data augmentation mode: a, b, c, d, e')
 ```
+## Logs
+### Learning Curve
+![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png)
 
+## Results
 ### Model difference (diff_model)
 #### table 
 __result_avg_log.csv__  
@@ -206,3 +210,10 @@ __result_log.csv__
 | Image |  ![airplane_349_epoch_10_iter_60](/uploads/2ea532877a7a64a80b1bc679d5d8e44c/airplane_349_epoch_10_iter_60.jpg)  | ![airplane_349_epoch_20_iter_120](/uploads/3b95ee27dee1483631bea27ce4a372d7/airplane_349_epoch_20_iter_120.jpg) | ![airplane_349_epoch_30_iter_180](/uploads/b43f5e3bd1c6f204acb68df2c4068c2b/airplane_349_epoch_30_iter_180.jpg) | ![airplane_349_epoch_40_iter_240](/uploads/26e7d22aab153832c4bd1d59655e788e/airplane_349_epoch_40_iter_240.jpg) | ![airplane_349_epoch_50_iter_300](/uploads/c72b6e6d0557791e9af38c8756276858/airplane_349_epoch_50_iter_300.jpg)   |
 | Epoch/PSNR | 60/27.658                                                                                                              | 70/29.506                                                                                                              | 80/29.759                                                                                                              | 90/30.455                                                                                                              | 100/30.486                                                                                                               |
 | Image | ![airplane_349_epoch_60_iter_360](/uploads/33e2f6dcd04ee3c91c6de54294142e5b/airplane_349_epoch_60_iter_360.jpg) | ![airplane_349_epoch_70_iter_420](/uploads/49f550f34f056cd73214fafe59b3ce7d/airplane_349_epoch_70_iter_420.jpg) | ![airplane_349_epoch_80_iter_480](/uploads/b7c8976853cd593a6b356c8a05b0efd5/airplane_349_epoch_80_iter_480.jpg) | ![airplane_349_epoch_90_iter_540](/uploads/1b7e34454491f862027487c835f9f9d6/airplane_349_epoch_90_iter_540.jpg) | ![airplane_349_epoch_100_iter_600](/uploads/852f878c7b8666504b69fc63dc629330/airplane_349_epoch_100_iter_600.jpg) |
+
+### Upscale difference
+| Image | LR                                                                                        | BICUBIC                                                                                             | SR                                                                                                                                    |
+|-------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| Up_2  | ![airplane_349_lr_up2](/uploads/a522dfa54f361e233b8f144af8e73197/airplane_349_lr_up2.jpg) | ![airplane_349_lr_up2_lerp](/uploads/f0b040cb68e865d1948a2f668a4ff137/airplane_349_lr_up2_lerp.jpg) | ![airplane_349_up2_ESPCN_epoch_100_Nov17_00](/uploads/84d530d1ef1505362ddc335b61fa11cf/airplane_349_up2_ESPCN_epoch_100_Nov17_00.jpg) |
+| Up_4  | ![airplane_349_lr_up4](/uploads/7ec46eda0c02f484d58ec3f01567f25e/airplane_349_lr_up4.jpg) | ![airplane_349_lr_up4_lerp](/uploads/cb0fcada26b257df780e7bc6b0cd5f8f/airplane_349_lr_up4_lerp.jpg) | ![airplane_349_up4_ESPCN_epoch_100_Nov17_00](/uploads/a78c8885509301c5f851d8b49393f4e1/airplane_349_up4_ESPCN_epoch_100_Nov17_00.jpg) |
+| Up_8  | ![airplane_349_lr_up8](/uploads/0273a8b7677c74edae4df626a15fa855/airplane_349_lr_up8.jpg) | ![airplane_349_lr_up8_lerp](/uploads/5b9154d33a411934e1762ab3be4467a9/airplane_349_lr_up8_lerp.jpg) | ![airplane_349_up8_ESPCN_epoch_100_Nov17_00](/uploads/330b8f118bedaadf6db7902b2130f0c3/airplane_349_up8_ESPCN_epoch_100_Nov17_00.jpg) |
