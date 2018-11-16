@@ -161,7 +161,7 @@ class L1_Charbonnier_loss(nn.Module):
 if __name__ == "__main__":
     # Hyper Parameters
     img_col, img_row, nb_channel = 224, 224, 3
-    upscale_factor = 1
+    upscale_factor = 2
     base_kernel = 32
     x = torch.FloatTensor(
         np.random.random((1, nb_channel, img_col, img_row)))
