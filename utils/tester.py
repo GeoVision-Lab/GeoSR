@@ -11,22 +11,15 @@ import os
 import sys
 sys.path.append('./utils')
 sys.path.append('..')
-import time
 import torch
 from utils import metrics
 import pandas as pd
 import warnings
-import seaborn as sns
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
-from torch.utils.data import DataLoader
-import torch.nn.functional as F
-import copy
 import numpy as np
 from PIL import Image
 from torchvision.transforms import ToTensor
-from loader import get_test_set, Load_img
-from preprocessor import DataAug
 import torchvision.transforms.functional as TF
 
 
@@ -61,6 +54,8 @@ class Result_Generator_Without_Truth(object):
         img_path = self.img_path
         model = self.model
         img = Image.open(img_path).convert('YCbCr')
+        if self.args.interpolation:
+            img = img.resize((img.size[0]*self.args.upscale_factor,img.size[1]*self.args.upscale_factor), resample = Image.BICUBIC)
         y, cb, cr = img.split()
         img_to_tensor = ToTensor()
         input = img_to_tensor(y).view(1, -1, y.size[1], y.size[0])
@@ -140,6 +135,9 @@ class Result_Generator_With_Truth(object):
         hr_img_y_tensor = img_to_tensor(hr_img_y).view(1, -1, hr_img_y.size[1], hr_img_y.size[0])
         hr_img_Cb = hr_img.split()[1]
         hr_img_Cr = hr_img.split()[2]
+
+        if args.interpolation:
+            args.upscale_factor = 1
         
         lr_img_y = TF.resize(hr_img_y, ( hr_img_y.size[0]// args.upscale_factor, hr_img_y.size[1] // args.upscale_factor))
         lr_img_y_tensor = img_to_tensor(lr_img_y).view(1, -1, lr_img_y.size[1], lr_img_y.size[0])
@@ -150,9 +148,10 @@ class Result_Generator_With_Truth(object):
             input = input.cuda()                    
         sr_img_y_tensor = model(input)
         sr_img_y_tensor = sr_img_y_tensor.cpu()        
+        
         """
         metrics
-        """        
+        """ 
         psnr = metrics.psnr(sr_img_y_tensor, hr_img_y_tensor)
         nrmse = metrics.nrmse(sr_img_y_tensor, hr_img_y_tensor)
         ssim = metrics.ssim(sr_img_y_tensor, hr_img_y_tensor)
@@ -194,7 +193,7 @@ class Base(object):
         self.avg_headers = ["model", "psnr_avg", "ssim_avg", "nrmse_avg"]
 
     def logging(self, result_log, verbose=False):
-        self.logs.append([self.ip, os.path.splitext(self.args.model_name)[0]] +
+        self.logs.append([self.ip, os.path.splitext(self.args.test_model_name)[0]] +
                          result_log)
         if verbose:
             print("psnr:{:0.3f}, ssim:{:0.3f}, nrmse:{:0.3f}"
@@ -217,7 +216,7 @@ class Base(object):
         result_logs.to_csv(os.path.join(self.result_save_dir, "result_log.csv"), index=False)
 
     def logging_avg(self, result_avg_log, verbose=True):
-        self.avg_logs.append([os.path.splitext(self.args.model_name)[0]] +
+        self.avg_logs.append([os.path.splitext(self.args.test_model_name)[0]] +
                          result_avg_log)
         if verbose:
             print("psnr_avg:{:0.3f}, ssim_avg:{:0.3f}, nrmse_avg:{:0.3f}"
@@ -297,7 +296,7 @@ class Tester(Base):
         if args.ground_truth:
             self.evaluating_model(model, model_name, test_dir)
         else:
-            result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model', 'with_truth')
+            result_save_dir = os.path.join(Result_DIR, 'raw', '_'.join(args.test_dir.split('/')[-3:]), 'diff_model', 'without_truth')
             if not os.path.exists(result_save_dir):
                 os.makedirs(result_save_dir)
         
@@ -384,7 +383,7 @@ class Tester(Base):
             self.middle_logging(self.result_log, _checkpoint_name)
             
             # generate lr image
-            lr_file = img_name + '_' + 'lr' + os.path.splitext(img_file)[1]
+            lr_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + os.path.splitext(img_file)[1]
             lr_path = os.path.join(result_save_dir, lr_file)
             if not os.path.exists(lr_path):
                 hr_img = Image.open(img_path)
@@ -444,7 +443,7 @@ class Tester(Base):
             self.logging(self.result_log)
             
             # generate lr image
-            lr_file = img_name + '_' + 'lr' + os.path.splitext(img_file)[1]
+            lr_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + os.path.splitext(img_file)[1]
             lr_path = os.path.join(result_save_dir, lr_file)
             if not os.path.exists(lr_path):
                 hr_img = Image.open(img_path)
