@@ -137,8 +137,16 @@ parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c',
                         help='data augmentation mode: a, b, c, d, e')
 ```
 
-## Visualization
-### Model difference
+## Model difference
+### table
+| ip               | model                             | psnr    | ssim  | nrmse |
+|------------------|-----------------------------------|---------|-------|-------|
+| airplane_349.jpg | up2_SRCNN_epoch_100_Nov16_23      | 34.478  | 0.018 | 0.996 |
+| airplane_349.jpg | up2_VDSR_epoch_100_Nov16_23       | 118.171 | 0     | 1     |
+| airplane_349.jpg | up2_SRDenseNet_epoch_100_Nov16_23 | -36.341 | 0.053 | 0.008 |
+| airplane_349.jpg | up2_ESPCN_epoch_100_Nov16_22      | 30.486  | 0.024 | 0.986 |
+| airplane_349.jpg | up2_FSRCNN_epoch_100_Nov16_22     | 24.278  | 0.06  | 0.913 |
+### Visualization
 | Type/PSNR | LR                                                                                                                                      | HR                                                                                                                                    | BICUBIC                                                                                                                             | ESPCN/30.486                                                                                                                                    |
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Image     |                        ![airplane_349_lr_up2](/uploads/bdcd1aff7f57c41ee910e6d5c7c154a0/airplane_349_lr_up2.jpg)                        |                       ![airplane_349_lr_up1](/uploads/24e26a98afd1d9190a5922fbb5946b12/airplane_349_lr_up1.jpg)                       |                 ![airplane_349_lr_up2_lerp](/uploads/e3b7c4247c4679623f82e435a3c63d63/airplane_349_lr_up2_lerp.jpg)                 |      ![airplane_349_up2_ESPCN_epoch_100_Nov16_22](/uploads/347f1d656f773a01b677f3e83bd47b31/airplane_349_up2_ESPCN_epoch_100_Nov16_22.jpg)      |
