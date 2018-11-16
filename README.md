@@ -141,12 +141,48 @@ parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c',
 | ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
 |:-----------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
 ### Model Info
+#### model settings
 |  aug | aug_mode | band_mode | base_kernel | batch_size | crop_size | cuda | data_dir                                      | date     | epochs | evalbatch_size | ground_truth | interpolation | interval | iter_interval | iters | lr   | method     | middle_checkpoint | model_name                            | nEpochs | nb_channel | save_model_epoch | seed | test  | test_diff_model | test_dir                                                  | test_middle_checkpoint | test_model | test_model_name                  | testbatch_size | threads | train | trigger | upscale_factor | valbatch_size |
 |:----:|:--------:|-----------|-------------|------------|-----------|------|-----------------------------------------------|----------|--------|----------------|--------------|---------------|----------|---------------|-------|------|------------|-------------------|---------------------------------------|---------|------------|------------------|------|-------|-----------------|-----------------------------------------------------------|------------------------|------------|----------------------------------|----------------|---------|-------|---------|----------------|---------------|
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up4_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 4              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up8_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up4_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 8              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | FSRCNN     | False             | up2_FSRCNN_epoch_100_Nov17_00.pth     | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
 | True | c        | Y         | 16          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_01 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | SRDenseNet | False             | up2_SRDenseNet_epoch_100_Nov17_01.pth | 100     | 1          |                  | 123  | False |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | True                   | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
+#### performance
+__train__
+
+| date     | epochs | fps     | iters | method     | nb_samples | nrmse | psnr    | ssim  | time(sec) |
+|----------|--------|---------|-------|------------|------------|-------|---------|-------|-----------|
+| Nov16_22 | 100    | 639.04  | 600   | FSRCNN     | 420        | 0.057 | 23.538  | 0.905 | 0.657     |
+| Nov16_22 | 100    | 627.644 | 600   | ESPCN      | 420        | 0.027 | 28.436  | 0.983 | 0.669     |
+| Nov16_23 | 100    | 484.939 | 600   | SRCNN      | 420        | 0.024 | 31.288  | 0.993 | 0.866     |
+| Nov16_23 | 100    | 235.047 | 600   | VDSR       | 420        | 0     | 118.102 | 1     | 1.787     |
+| Nov16_23 | 100    | 309.75  | 600   | SRDenseNet | 420        | 0.034 | -35.837 |       | 1.356     |
+
+<br>
+
+__val__
+
+| date     | epochs | fps     | iters | method     | nb_samples | nrmse | psnr    | ssim  | time(sec) |
+|----------|--------|---------|-------|------------|------------|-------|---------|-------|-----------|
+| Nov16_22 | 100    | 592.429 | 600   | FSRCNN     | 140        | 0.055 | 23.864  | 0.911 | 0.236     |
+| Nov16_22 | 100    | 614.134 | 600   | ESPCN      | 140        | 0.026 | 28.946  | 0.985 | 0.228     |
+| Nov16_23 | 100    | 460.971 | 600   | SRCNN      | 140        | 0.022 | 31.982  | 0.994 | 0.304     |
+| Nov16_23 | 100    | 223.447 | 600   | VDSR       | 140        | 0     | 118.456 | 1     | 0.627     |
+| Nov16_23 | 100    | 287.71  | 600   | SRDenseNet | 140        | 0.035 | -35.931 | 0.01  | 0.487     |
+
+<br>
+
+__test__
+
+| date     | epochs | fps     | iters | method     | nb_samples | nrmse | psnr    | ssim  | time(sec) |
+|----------|--------|---------|-------|------------|------------|-------|---------|-------|-----------|
+| Nov16_19 | 200    | 427.941 | 400   | FSRCNN     | 50         | 0.115 | 19.083  | 0.869 | 0.117     |
+| Nov16_19 | 200    | 336.643 | 400   | ESPCN      | 50         | 0.05  | 22.838  | 0.977 | 0.149     |
+| Nov16_19 | 200    | 67.637  | 400   | SRCNN      | 50         | 0.027 | 29.993  | 0.995 | 0.739     |
+| Nov16_19 | 200    | 87.139  | 400   | VDSR       | 50         | 0     | 119.635 | 1     | 0.574     |
+| Nov16_19 | 200    | 241.894 | 400   | SRDenseNet | 50         | 0.035 | -39.654 |       | 0.207     |
+
 ## Results
 ### Model Difference (diff_model)
 #### table 
