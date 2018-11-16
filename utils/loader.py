@@ -26,9 +26,11 @@ warnings.filterwarnings("ignore", message="numpy.dtype size changed")
 warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
 
 class Load_img(object):
-    def __init__(self, band_mode, filepath):
+    def __init__(self, band_mode, filepath, interpolation, upscale_factor):
         self.band_mode = band_mode
         self.filepath = filepath
+        self.interpolation = interpolation
+        self.upscale_factor = upscale_factor
     def load_img_YCbCr(self):
         """
         Change RGB to YCbCr
@@ -59,30 +61,33 @@ class Load_img(object):
             img = self.load_img_Y()
         if self.band_mode == 'RGB':
             img = self.load_img_RGB()
+        if self.interpolation:
+            img = img.resize((img.size[0]*self.upscale_factor,img.size[1]*self.upscale_factor), resample = Image.BICUBIC)
         return img
 
 class DatasetFromFolder(data.Dataset):
-    def __init__(self, band_mode, image_dir, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
+    def __init__(self, band_mode, image_dir, interpolation, transform=True, aug_mode='a', crop_size=224, upscale_factor=2):
         super(DatasetFromFolder, self).__init__()
         self.band_mode = band_mode
         self.image_filenames = sorted([os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)])
 #        self.image_filenames = [os.path.join(image_dir, x) for x in os.listdir(image_dir) if is_image_file(x)]
+        self.interpolation = interpolation        
         self.transform = transform
         self.trans_mode = aug_mode
         self.crop_size = crop_size
         self.upscale_factor = upscale_factor
 
+
     def __getitem__(self, index):
         """
         data.Dataset can make index range from 0 to len(image_filenames) iteratively
         """
-#        print(index)
-#        import time
-#        time.sleep(4)
-        load_img = Load_img(self.band_mode, self.image_filenames[index])
-#        print(self.image_filenames[index])
+        load_img = Load_img(self.band_mode, self.image_filenames[index], self.interpolation, self.upscale_factor)
+        
         input = load_img()
         target = input.copy()
+        if self.interpolation:
+            self.upscale_factor = 1
         if self.transform:
             data_aug = DataAug(input, target, self.trans_mode, self.crop_size, self.upscale_factor)
             input, target = data_aug()
@@ -90,11 +95,11 @@ class DatasetFromFolder(data.Dataset):
             input = TF.center_crop(input, (self.crop_size, self.crop_size))
             input = TF.resize(input, (self.crop_size // self.upscale_factor, self.crop_size // self.upscale_factor))
             input = TF.to_tensor(input)
-
             target = TF.center_crop(target, (self.crop_size, self.crop_size))
             target = TF.to_tensor(target)
         return input, target
-
+    
+    
     def __len__(self):
         return len(self.image_filenames)
 
@@ -104,52 +109,55 @@ def is_image_file(filename):
 def calculate_valid_crop_size(crop_size, upscale_factor):
     return crop_size - (crop_size % upscale_factor)
 
-def get_training_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_training_set(band_mode, data_dir, interpolation, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     train_dir = os.path.join(root_dir, "train")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
     return DatasetFromFolder(band_mode,
                              train_dir,
+                             interpolation,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_val_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_val_set(band_mode, data_dir, interpolation, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     val_dir = os.path.join(root_dir, "val")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
     return DatasetFromFolder(band_mode,
                              val_dir,
+                             interpolation,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_eval_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+def get_eval_set(band_mode, data_dir, interpolation, aug, aug_mode, crop_size, upscale_factor):
     root_dir = os.path.join(data_dir,'images')
     test_dir = os.path.join(root_dir, "test")
     crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
 
     return DatasetFromFolder(band_mode,
                              test_dir,
+                             interpolation,
                              transform=aug,
                              aug_mode=aug_mode,
                              crop_size=crop_size, 
                              upscale_factor=upscale_factor)
 
-def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
-    test_dir = data_dir
-    crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
-
-    return DatasetFromFolder(band_mode,
-                             test_dir,
-                             transform=aug,
-                             aug_mode=aug_mode,
-                             crop_size=crop_size, 
-                             upscale_factor=upscale_factor)
+#def get_test_set(band_mode, data_dir, aug, aug_mode, crop_size, upscale_factor):
+#    test_dir = data_dir
+#    crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
+#
+#    return DatasetFromFolder(band_mode,
+#                             test_dir,
+#                             transform=aug,
+#                             aug_mode=aug_mode,
+#                             crop_size=crop_size, 
+#                             upscale_factor=upscale_factor)
 
 
 if __name__ == "__main__":
