@@ -40,12 +40,38 @@ Geosr
 │   ├── srdensenet.py
 │   └── vdsr.py
 ├── utils
+│   ├── combiner.py
 │   ├── extractor.py
+│   ├── loader.py
 │   ├── metrics.py
 │   ├── preprocessor.py
 │   ├── trainer.py
 │   ├── tester.py
 │   └── vision.py
+├── result
+│   ├── raw
+│   │   └── test_dir_name
+│   │       ├── diff_model
+│   │       │   ├── with_truth
+│   │       │   │   ├── results(sr)
+│   │       │   │   ├── result_avg_log.csv
+│   │       │   │   └── result_log.csv
+│   │       │   └── without_truth
+│   │       │       └── results(sr)
+│   │       └── middle_checkpoint
+│   │           └── model_name
+│   │               ├── with_truth
+│   │               │   ├── results(sr)
+│   │               │   ├── result_avg_log.csv
+│   │               │   └── result_log.csv
+│   │               └── without_truth
+│   │                   └── results(sr)
+│   └── generate
+│       ├── combined
+│       │   └── test_dir_name
+│       │       └── results(sr)
+│       ├── figures
+│       └── tables
 ├── main.py
 │  
 ...
@@ -62,7 +88,9 @@ Geosr
 * `preprocess.py`: data augmentation
 * `loader.py`: load images from `./data/data_dir` with data augmentation
 * `metrics.py`: evaluation metrics such as PSNR, SSIM, NRMSE, VIFP
-* `runner.py`: training, testing, log saving
+* `trainer.py`: training, evaluation, log saving
+* `tester.py`: testing, log saving
+* 
 
 #### files
 * `./dataset/save_dir/all.csv trian.csv test.csv val.csv`: image names(id)
