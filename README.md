@@ -140,6 +140,7 @@ parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c',
 ## Model difference
 ### table 
 __result_avg_log.csv__  
+
 | model                             | psnr_avg | ssim_avg | nrmse_avg |
 |-----------------------------------|----------|----------|-----------|
 | up2_ESPCN_epoch_100_Nov16_22      | 30.048   | 0.984    | 0.03      |
@@ -147,8 +148,11 @@ __result_avg_log.csv__
 | up2_SRCNN_epoch_100_Nov16_23      | 33.034   | 0.994    | 0.023     |
 | up2_SRDenseNet_epoch_100_Nov16_23 | -35.027  |          | 0.043     |
 | up2_VDSR_epoch_100_Nov16_23       | 119.484  | 1        | 0         |
+  
+<br>  
 
 __result_log.csv__  
+
 | ip               | model                             | psnr    | ssim  | nrmse |
 |------------------|-----------------------------------|---------|-------|-------|
 | airplane_349.jpg | up2_SRCNN_epoch_100_Nov16_23      | 34.478  | 0.018 | 0.996 |
