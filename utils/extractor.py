@@ -154,12 +154,11 @@ class Extractor(Extractor_Save):
         pd.DataFrame(_statistics,
                      columns=["img_name","nb-samples", "nb_rows", "nb_cols", "img_rows", "img_cols"]).to_csv(_file, index=False)
 
-        # save infos
-        infos = pd.DataFrame(columns=['id'])
-
-        infos['id'] = _infos
-        self.save_infos(infos)
-        self.split_dir('images')
+        if args.split:
+            infos = pd.DataFrame(columns=['id'])
+            infos['id'] = _infos
+            self.save_infos(infos)
+            self.split_dir('images')
 
     def extract_by_random_allocation(self):
         """
@@ -182,12 +181,12 @@ class Extractor(Extractor_Save):
 
             _info = [self.src_name]
             _infos.extend(_info)
-        # save infos
-        infos = pd.DataFrame(columns=['id'])
-
-        infos['id'] = _infos
-        self.save_infos(infos)
-        self.split_dir('images')
+        
+        if args.split:
+            infos = pd.DataFrame(columns=['id'])
+            infos['id'] = _infos
+            self.save_infos(infos)
+            self.split_dir('images')
 
     def extract_by_random_slide(self):
         """
@@ -232,40 +231,41 @@ class Extractor(Extractor_Save):
         pd.DataFrame(_statistics,
                      columns=["img_name","nb-samples", "img_rows", "img_cols"]).to_csv(_file, index=False)
 
-        # save infos
-        infos = pd.DataFrame(columns=['id'])
-
-        infos['id'] = _infos
-        self.save_infos(infos)
-        self.split_dir('images')
+        if args.split:
+            infos = pd.DataFrame(columns=['id'])
+            infos['id'] = _infos
+            self.save_infos(infos)
+            self.split_dir('images')
 
 
 if __name__ == "__main__":
     # ====================== parameter initialization ======================= #
     parser = argparse.ArgumentParser(description='ArgumentParser')
-    parser.add_argument('--data_dir', type=str, default="bridge",
+    parser.add_argument('--data_dir', type=str, default="map",
                         help='data dir for processing')
-    parser.add_argument('--mode', type=str, default='alloc-rand',
+    parser.add_argument('--mode', type=str, default='slide-stride',
                         choices=['slide-stride', 'slide-rand', 'alloc-rand'],
                         help='croping mode: slide-stride, slide-rand ')
     parser.add_argument('--img_rows', type=int, default=224,
                         help='img rows for croping. Default=224 ')
     parser.add_argument('--img_cols', type=int, default=224,
                         help='img cols for croping. Default=224 ')
-    parser.add_argument('--nb_crop', type=int, default=2,
+    parser.add_argument('--nb_crop', type=int, default=400,
                         help='number of random crops. Default=400 ')
     parser.add_argument('--seed', type=int, default=123,
                         help='random seed to use. Default=123 ')
     parser.add_argument('--stride', type=int, default=224,
                         help='img cols for croping. Default=224 ')
+    parser.add_argument('--split', type=lambda x: (str(x).lower() == 'true'), default=True,
+                        help='split into train, test, and val or not?')
 
     args = parser.parse_args()
 
-    extractor = Extractor(args.data_dir, args.img_rows, args.img_cols, args.nb_crop,
-                                args.seed, args.stride, )
+    extractor = Extractor(args.data_dir, args.img_rows, args.img_cols, args.nb_crop, args.seed, args.stride)
+                                
     if args.mode == 'slide-stride':
         extractor.extract_by_stride_slide()
-    if args.mode == 'slide-rand':
+    elif args.mode == 'slide-rand':
         extractor.extract_by_random_slide()
     else:
         extractor.extract_by_random_allocation()
