@@ -18,14 +18,14 @@ class VDSR(nn.Module):
         CVPR2016: Accurate Image Super-Resolution Using Very Deep Convolutional Networks
     """
     def __init__(self, 
-                 nb_channels=3,
+                 nb_channel=3,
                  base_kernel=64, 
                  num_residuals=18):
         
         super(VDSR, self).__init__()
         
         # input conv
-        self.input_conv = nn.Sequential(nn.Conv2d(nb_channels, base_kernel, kernel_size=3, stride=1, padding=1, bias=False),
+        self.input_conv = nn.Sequential(nn.Conv2d(nb_channel, base_kernel, kernel_size=3, stride=1, padding=1, bias=False),
                                         nn.ReLU(inplace=True))
         # residual_layers
         conv_blocks = []
@@ -34,7 +34,7 @@ class VDSR(nn.Module):
                                              nn.ReLU(inplace=True)))
         self.residual_layers = nn.Sequential(*conv_blocks)
         # output
-        self.output_conv = nn.Conv2d(base_kernel, nb_channels, kernel_size=3, stride=1, padding=1, bias=False)
+        self.output_conv = nn.Conv2d(base_kernel, nb_channel, kernel_size=3, stride=1, padding=1, bias=False)
  
     def forward(self, x):
         residual = x
