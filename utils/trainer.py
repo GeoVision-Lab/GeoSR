@@ -115,8 +115,8 @@ class Base(object):
         for name in vars(args):
             model_info_names.append(name)
             model_info.append(eval('args.'+str(name)))
-        basic_info_names = ['date', 'method']
-        basic_info = [self.date, self.method]
+        basic_info_names = ['date', 'method', 'model_name']
+        basic_info = [self.date, self.method, model_name]
         model_log = pd.DataFrame([basic_info + model_info],
                                columns=basic_info_names + model_info_names)
 
