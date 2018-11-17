@@ -187,6 +187,12 @@ __Testing or Not?__
 ```python
 parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
 ```
+
+__Target Dir__
+```python
+parser.add_argument('--test_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc','images', 'test'), help="testing data directory")
+```
+
 __Testing Model__  
 If testing without training, choose exsiting trained model in model_zoo directory with test_model_name
 ```python
@@ -195,9 +201,6 @@ parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_
 
 __Testing Mode__
 ```python
-parser.add_argument('--test_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc','images', 'test'), help="testing data directory")
-parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_Nov17_00.pth', help='model used for testing')
-
 parser.add_argument('--ground_truth', type=lambda x: (str(x).lower() == 'true'), default=True, help='have ground truth or not')
 parser.add_argument('--test_model', type=lambda x: (str(x).lower() == 'true'), default=True, help='test different models')
 parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() == 'true'), default=False, help='have middle checkpoints of one model')
