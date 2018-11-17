@@ -147,6 +147,59 @@ parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=
 parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'],
                         help='data augmentation mode: a, b, c, d, e')
 ```
+### Training
+_Train or Not?_
+```python
+parser.add_argument('--train', type=lambda x: (str(x).lower() == 'true'), default=True, help='train or not?')
+```
+
+__Data Directory__
+```python
+parser.add_argument('--data_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc'), help="data directory for training")
+```
+
+_Hyperparameters_
+```python
+parser.add_argument('--crop_size', type=int, default=224, help='crop size from each data. Default=224 (same to image size)')
+parser.add_argument('--nb_channel', type=int, default=1, help="input image band, based on band_mode")
+parser.add_argument('--interpolation', type=lambda x: (str(x).lower() == 'true'), default=False, help="conduct pre-interpolation or not")
+parser.add_argument('--upscale_factor', type=int, default=2, help="super resolution upscale factor")
+parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=True, help='data augmentation or not') 
+parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'], 
+                    help='data augmentation mode: a, b, c, d, e')
+parser.add_argument('--base_kernel', type=int, default=64, help="base kernel")
+parser.add_argument('--batch_size', type=int, default=64, help='training batch size')
+parser.add_argument('--valbatch_size', type=int, default=10, help='validation batch size')
+parser.add_argument('--evalbatch_size', type=int, default=10, help='evaluation batch size')
+parser.add_argument('--nEpochs', type=int, default=100, help='number of epochs to train for')
+parser.add_argument('--lr', type=float, default=0.01, help='Learning Rate. Default=0.01')
+parser.add_argument('--trigger', type=str, default='epoch', choices=['epoch', 'iter'],
+                    help='trigger type for logging')
+parser.add_argument('--interval', type=int, default=50,
+                    help='interval for logging')
+parser.add_argument('--middle_checkpoint', type=lambda x: (str(x).lower() == 'true'), default=False, help='save middle checkpoint of model or not')
+
+parser.add_argument('--cuda', type=lambda x: (str(x).lower() == 'true'), default=True, help='use cuda?')    
+parser.add_argument('--threads', type=int, default=6, help='number of threads for data loader to use')
+parser.add_argument('--seed', type=int, default=123, help='random seed to use. Default=123')
+```
+### Testing
+_Testing or Not?_
+```python
+parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
+```
+
+_Testing Mode_
+```python
+parser.add_argument('--test_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc','images', 'test'), help="testing data directory")
+parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_Nov17_00.pth', help='model used for testing')
+
+parser.add_argument('--ground_truth', type=lambda x: (str(x).lower() == 'true'), default=True, help='have ground truth or not')
+parser.add_argument('--test_model', type=lambda x: (str(x).lower() == 'true'), default=True, help='test different models')
+parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() == 'true'), default=False, help='have middle checkpoints of one model')
+ 
+```
+
 ## Logs
 ### Learning Curve
 | ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
