@@ -101,7 +101,6 @@ Geosr
 * `metrics.py`: evaluation metrics such as PSNR, SSIM, NRMSE, VIFP
 * `trainer.py`: training, evaluation, log saving
 * `tester.py`: testing, log saving
-* 
 
 #### files
 * `./dataset/save_dir/all.csv trian.csv test.csv val.csv`: image names(id)
@@ -188,6 +187,11 @@ __Testing or Not?__
 ```python
 parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
 ```
+__Testing Model__  
+If testing without training, choose exsiting trained model in model_zoo directory with test_model_name
+```python
+parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_Nov17_00.pth', help='model used for testing')
+```
 
 __Testing Mode__
 ```python
@@ -197,7 +201,6 @@ parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_
 parser.add_argument('--ground_truth', type=lambda x: (str(x).lower() == 'true'), default=True, help='have ground truth or not')
 parser.add_argument('--test_model', type=lambda x: (str(x).lower() == 'true'), default=True, help='test different models')
 parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() == 'true'), default=False, help='have middle checkpoints of one model')
- 
 ```
 
 ## Logs
@@ -275,7 +278,7 @@ __result_log.csv__
 | Type/PSNR | LR                                                                                                                                      | HR                                                                                                                                    | BICUBIC                                                                                                                             | ESPCN/30.486                                                                                                                                    |
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Image     |                        ![airplane_349_lr_up2](/uploads/bdcd1aff7f57c41ee910e6d5c7c154a0/airplane_349_lr_up2.jpg)                        |                       ![airplane_349_lr_up1](/uploads/24e26a98afd1d9190a5922fbb5946b12/airplane_349_lr_up1.jpg)                       |                 ![airplane_349_lr_up2_lerp](/uploads/e3b7c4247c4679623f82e435a3c63d63/airplane_349_lr_up2_lerp.jpg)                 |      ![airplane_349_up2_ESPCN_epoch_100_Nov16_22](/uploads/347f1d656f773a01b677f3e83bd47b31/airplane_349_up2_ESPCN_epoch_100_Nov16_22.jpg)      |
-| Type      | FSRCNN/24.278                                                                                                                           | SRCNN/34.478                                                                                                                          | VDSR/118.171                                                                                                                        | SRDenseNet/-36.431                                                                                                                              |
+| Type/PSNR      | FSRCNN/24.278                                                                                                                           | SRCNN/34.478                                                                                                                          | VDSR/118.171                                                                                                                        | SRDenseNet/-36.431                                                                                                                              |
 | Image     | ![airplane_349_up2_FSRCNN_epoch_100_Nov16_22](/uploads/bb6f56a1d889c3d71add00b9ff7455da/airplane_349_up2_FSRCNN_epoch_100_Nov16_22.jpg) | ![airplane_349_up2_SRCNN_epoch_100_Nov16_23](/uploads/9f8807936d31a3426fc7cada9b90bbbc/airplane_349_up2_SRCNN_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_VDSR_epoch_100_Nov16_23](/uploads/4bdba5e42a236a81e7a4655a63273acb/airplane_349_up2_VDSR_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_SRDenseNet_epoch_100_Nov16_23](/uploads/e89b6eb926c769b97c0d73b0378fc66d/airplane_349_up2_SRDenseNet_epoch_100_Nov16_23.jpg) |
 ### Epoch Difference (middle_checkpoint)
 #### table
