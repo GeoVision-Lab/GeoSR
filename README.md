@@ -148,7 +148,7 @@ parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c',
                         help='data augmentation mode: a, b, c, d, e')
 ```
 ### Training
-_Train or Not?_
+__Train or Not?__
 ```python
 parser.add_argument('--train', type=lambda x: (str(x).lower() == 'true'), default=True, help='train or not?')
 ```
@@ -158,7 +158,7 @@ __Data Directory__
 parser.add_argument('--data_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc'), help="data directory for training")
 ```
 
-_Hyperparameters_
+__Hyperparameters__
 ```python
 parser.add_argument('--crop_size', type=int, default=224, help='crop size from each data. Default=224 (same to image size)')
 parser.add_argument('--nb_channel', type=int, default=1, help="input image band, based on band_mode")
@@ -184,12 +184,12 @@ parser.add_argument('--threads', type=int, default=6, help='number of threads fo
 parser.add_argument('--seed', type=int, default=123, help='random seed to use. Default=123')
 ```
 ### Testing
-_Testing or Not?_
+__Testing or Not?__
 ```python
 parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
 ```
 
-_Testing Mode_
+__Testing Mode__
 ```python
 parser.add_argument('--test_dir', type=str, default=os.path.join(DIR, 'dataset','church-alloc','images', 'test'), help="testing data directory")
 parser.add_argument('--test_model_name', type=str, default='up8_ESPCN_epoch_100_Nov17_00.pth', help='model used for testing')
