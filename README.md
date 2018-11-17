@@ -5,6 +5,10 @@ High Resolution: PSNR            |  Low Resolution: 33.32 |  Super Resolution: 3
 
 ## Structure of directories
 ### sub directories
+
+<details><summary> Click Me </summary>
+<p>
+
 ```
 Geosr
 ├── src
@@ -76,6 +80,9 @@ Geosr
 │  
 ...
 ```
+</p>
+</details>
+
 #### directories
 * `./src/data_dir`: original images
 * `./dataset/save_dir`: croped images and related information
