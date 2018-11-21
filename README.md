@@ -127,6 +127,10 @@ If you use our code or any of the ideas from our paper please cite:
 * [torch 0.4.1+](https://pytorch.org/tutorials/)
 * [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
 
+### 3.3 GeoVision Serials 
+* [GeoSeg](https://github.com/huster-wgm/geoseg): A Computer Vision Package for Automatic Building Segmentation and Outline extraction
+* [GeoSR](https://gitlab.com/Chokurei/geosr): A Computer Vision Package for Remote Sensing Image Super Resolution
+
 ## 4. Get Started
 
 ### 4.1 Data
@@ -209,7 +213,7 @@ parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() =
 ```
 
 ## 5. Logs
-### 5.1 Learning Curve
+### 5.1 Learning Curve (`logs/curve/*.png`)
 | ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
 |:-----------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
 ### 5.2 Model Info
