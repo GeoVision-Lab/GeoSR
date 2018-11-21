@@ -134,6 +134,7 @@ If you use our code or any of the ideas from our paper please cite:
 ## 4. Get Started
 
 ### 4.1 Data
+save data in `./src/data_dir` and run  
 ```
 $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 ```
