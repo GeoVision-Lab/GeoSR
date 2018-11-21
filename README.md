@@ -7,7 +7,7 @@
 | runway       |![runway_389_lr_up2](/uploads/3cad2874cc185eb9fe75b3e369290564/runway_389_lr_up2.jpg)    | ![runway_389](/uploads/3a27c51dbc66adb79b53a666be4d5873/runway_389.jpg)                   |     ![runway_389_lr_up2_lerp](/uploads/261d66420f42ddbd7145d8e4b6a1d5b7/runway_389_lr_up2_lerp.jpg)                  | ![runway_389_up2_ESPCN_epoch_100_Nov17_10](/uploads/d38c4438d0377bf1027dbd8cd178d8e6/runway_389_up2_ESPCN_epoch_100_Nov17_10.jpg)             |
 | ship         | ![ship_295_lr_up2](/uploads/5eeb4ee1ab33422c9d850cac1b68da5f/ship_295_lr_up2.jpg)                 | ![ship_295](/uploads/b90b44339895c8969fcbfa29ab29c873/ship_295.jpg)                       | ![ship_295_lr_up2_lerp](/uploads/7b28b069a84b543564617f664333be06/ship_295_lr_up2_lerp.jpg)                 | ![ship_295_up2_ESPCN_epoch_100_Nov17_10](/uploads/f64fddf16b7e738b1abbd4ec3a1d347f/ship_295_up2_ESPCN_epoch_100_Nov17_10.jpg)                 |
 | tennis court | ![tennis_court_418_lr_up2](/uploads/95da0525ca8e3310163d27368608cdc2/tennis_court_418_lr_up2.jpg) | ![tennis_court_418](/uploads/f0c661c99495b1b4756690256aa0b100/tennis_court_418.jpg)       | ![tennis_court_418_lr_up2_lerp](/uploads/a8449e5d8792fdd054bfb93eeaddf774/tennis_court_418_lr_up2_lerp.jpg) | ![tennis_court_418_up2_ESPCN_epoch_100_Nov17_10](/uploads/dffacaf11cd7edd2cebb49517ee8ac37/tennis_court_418_up2_ESPCN_epoch_100_Nov17_10.jpg) |
-## Structure of directories
+## 1. Structure of directories
 ### sub directories
 
 <details><summary> Click Me </summary>
@@ -108,11 +108,11 @@ Geosr
 * `./logs/statistic/model_info.csv`: model argument information
 * `./logs/statistic/trian.csv test.csv val.csv` final statistic result and parameter information for related model
 
-## Model Architectures
+## 2. Model Architectures
 [Here](https://gitlab.com/Chokurei/geosr/tree/master/archs)
 
-## Get Started
-### Reference
+## 3. Profiles
+### 3.1 Reference
 If you use our code or any of the ideas from our paper please cite:
 ```
 @article{wu2018geoseg,
@@ -122,19 +122,21 @@ If you use our code or any of the ideas from our paper please cite:
   year={2018}
 }
 ```
-### Requirements
+### 3.2 Requirements
 * [Python 3.5.2+](https://www.python.org/)
 * [torch 0.4.1+](https://pytorch.org/tutorials/)
 * [torchvision 0.2.1+](https://pytorch.org/docs/stable/torchvision/index.html)
 
-### Data
+## 4. Get Started
+
+### 4.1 Data
 ```
 $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 ```
 or  
 save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
 
-### 1. Preprocessing
+### 4.2 Preprocessing
 __Band choose__  
 ```python
 parser.add_argument('--band_mode', type=str, default='Y', choices=['Y', 'YCbCr', 'RGB'], help="band mode")
@@ -146,7 +148,7 @@ parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=
 parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'],
                         help='data augmentation mode: a, b, c, d, e')
 ```
-### 2. Training
+### 4.3 Training
 __Train or Not?__
 ```python
 parser.add_argument('--train', type=lambda x: (str(x).lower() == 'true'), default=True, help='train or not?')
@@ -182,7 +184,7 @@ parser.add_argument('--cuda', type=lambda x: (str(x).lower() == 'true'), default
 parser.add_argument('--threads', type=int, default=6, help='number of threads for data loader to use')
 parser.add_argument('--seed', type=int, default=123, help='random seed to use. Default=123')
 ```
-### 3. Testing
+### 4.4 Testing
 __Testing or Not?__
 ```python
 parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
@@ -206,19 +208,19 @@ parser.add_argument('--test_model', type=lambda x: (str(x).lower() == 'true'), d
 parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() == 'true'), default=False, help='have middle checkpoints of one model')
 ```
 
-## Logs
-### Learning Curve
+## 5. Logs
+### 5.1 Learning Curve
 | ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
 |:-----------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
-### Model Info
-#### model settings (`./logs/statistic/model_info.csv`)
+### 5.2 Model Info
+#### 5.2.1 model settings (`./logs/statistic/model_info.csv`)
 |  aug | aug_mode | band_mode | base_kernel | batch_size | crop_size | cuda | data_dir                                      | date     | epochs | evalbatch_size | ground_truth | interpolation | interval | iter_interval | iters | lr   | method     | middle_checkpoint | model_name                            | nEpochs | nb_channel | save_model_epoch | seed | test  | test_diff_model | test_dir                                                  | test_middle_checkpoint | test_model | test_model_name                  | testbatch_size | threads | train | trigger | upscale_factor | valbatch_size |
 |:----:|:--------:|-----------|-------------|------------|-----------|------|-----------------------------------------------|----------|--------|----------------|--------------|---------------|----------|---------------|-------|------|------------|-------------------|---------------------------------------|---------|------------|------------------|------|-------|-----------------|-----------------------------------------------------------|------------------------|------------|----------------------------------|----------------|---------|-------|---------|----------------|---------------|
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up4_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 4              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up8_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up4_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 8              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | FSRCNN     | False             | up2_FSRCNN_epoch_100_Nov17_00.pth     | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
 | True | c        | Y         | 16          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_01 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | SRDenseNet | False             | up2_SRDenseNet_epoch_100_Nov17_01.pth | 100     | 1          |                  | 123  | False |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | True                   | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
-#### performance (`./logs/statistic/trian.csv test.csv val.csv`)
+#### 5.2.2 model performance (`./logs/statistic/trian.csv test.csv val.csv`)
 __train__
 
 | date     | epochs | fps     | iters | method     | nb_samples | nrmse | psnr    | ssim  | time(sec) |
@@ -253,9 +255,9 @@ __test__
 | Nov16_19 | 200    | 87.139  | 400   | VDSR       | 50         | 0     | 119.635 | 1     | 0.574     |
 | Nov16_19 | 200    | 241.894 | 400   | SRDenseNet | 50         | 0.035 | -39.654 |       | 0.207     |
 
-## Results
-### Model Difference (`diff_model`)
-#### table 
+## 6. Results
+###  6.1 Model Difference (`diff_model`)
+#### 6.1.1 Table 
 `result_avg_log.csv`  
 
 | model                             | psnr_avg | ssim_avg | nrmse_avg |
@@ -277,14 +279,14 @@ __test__
 | airplane_349.jpg | up2_SRDenseNet_epoch_100_Nov16_23 | -36.341 | 0.053 | 0.008 |
 | airplane_349.jpg | up2_ESPCN_epoch_100_Nov16_22      | 30.486  | 0.024 | 0.986 |
 | airplane_349.jpg | up2_FSRCNN_epoch_100_Nov16_22     | 24.278  | 0.06  | 0.913 |
-#### Visualization (results(sr))
+#### 6.1.2 Visualization (results(sr))
 | Type/PSNR | LR                                                                                                                                      | HR                                                                                                                                    | BICUBIC                                                                                                                             | ESPCN/30.486                                                                                                                                    |
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | Image     |                        ![airplane_349_lr_up2](/uploads/bdcd1aff7f57c41ee910e6d5c7c154a0/airplane_349_lr_up2.jpg)                        |                       ![airplane_349_lr_up1](/uploads/24e26a98afd1d9190a5922fbb5946b12/airplane_349_lr_up1.jpg)                       |                 ![airplane_349_lr_up2_lerp](/uploads/e3b7c4247c4679623f82e435a3c63d63/airplane_349_lr_up2_lerp.jpg)                 |      ![airplane_349_up2_ESPCN_epoch_100_Nov16_22](/uploads/347f1d656f773a01b677f3e83bd47b31/airplane_349_up2_ESPCN_epoch_100_Nov16_22.jpg)      |
 | Type/PSNR      | FSRCNN/24.278                                                                                                                           | SRCNN/34.478                                                                                                                          | VDSR/118.171                                                                                                                        | SRDenseNet/-36.431                                                                                                                              |
 | Image     | ![airplane_349_up2_FSRCNN_epoch_100_Nov16_22](/uploads/bb6f56a1d889c3d71add00b9ff7455da/airplane_349_up2_FSRCNN_epoch_100_Nov16_22.jpg) | ![airplane_349_up2_SRCNN_epoch_100_Nov16_23](/uploads/9f8807936d31a3426fc7cada9b90bbbc/airplane_349_up2_SRCNN_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_VDSR_epoch_100_Nov16_23](/uploads/4bdba5e42a236a81e7a4655a63273acb/airplane_349_up2_VDSR_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_SRDenseNet_epoch_100_Nov16_23](/uploads/e89b6eb926c769b97c0d73b0378fc66d/airplane_349_up2_SRDenseNet_epoch_100_Nov16_23.jpg) |
-### Epoch Difference (middle_checkpoint)
-#### table
+### 6.2 Epoch Difference (middle_checkpoint)
+#### 6.2.1 Table
 `result_avg_log.csv` 
 
 | model              | psnr_avg | ssim_avg | nrmse_avg |
@@ -317,14 +319,14 @@ __test__
 | airplane_349.jpg | epoch_90_iter_540  | 30.455 | 0.024 | 0.985 |
 | airplane_349.jpg | epoch_100_iter_600 | 30.486 | 0.024 | 0.986 |
 
-#### Visualization (results(sr))
+#### 6.2.2 Visualization (results(sr))
 | Epoch/PSNR | 10/21.093                                                                                                              | 20/23.721                                                                                                              | 30/27.153                                                                                                              | 40/28.298                                                                                                              | 50/27.244                                                                                                                |
 |-------|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | Image |  ![airplane_349_epoch_10_iter_60](/uploads/2ea532877a7a64a80b1bc679d5d8e44c/airplane_349_epoch_10_iter_60.jpg)  | ![airplane_349_epoch_20_iter_120](/uploads/3b95ee27dee1483631bea27ce4a372d7/airplane_349_epoch_20_iter_120.jpg) | ![airplane_349_epoch_30_iter_180](/uploads/b43f5e3bd1c6f204acb68df2c4068c2b/airplane_349_epoch_30_iter_180.jpg) | ![airplane_349_epoch_40_iter_240](/uploads/26e7d22aab153832c4bd1d59655e788e/airplane_349_epoch_40_iter_240.jpg) | ![airplane_349_epoch_50_iter_300](/uploads/c72b6e6d0557791e9af38c8756276858/airplane_349_epoch_50_iter_300.jpg)   |
 | Epoch/PSNR | 60/27.658                                                                                                              | 70/29.506                                                                                                              | 80/29.759                                                                                                              | 90/30.455                                                                                                              | 100/30.486                                                                                                               |
 | Image | ![airplane_349_epoch_60_iter_360](/uploads/33e2f6dcd04ee3c91c6de54294142e5b/airplane_349_epoch_60_iter_360.jpg) | ![airplane_349_epoch_70_iter_420](/uploads/49f550f34f056cd73214fafe59b3ce7d/airplane_349_epoch_70_iter_420.jpg) | ![airplane_349_epoch_80_iter_480](/uploads/b7c8976853cd593a6b356c8a05b0efd5/airplane_349_epoch_80_iter_480.jpg) | ![airplane_349_epoch_90_iter_540](/uploads/1b7e34454491f862027487c835f9f9d6/airplane_349_epoch_90_iter_540.jpg) | ![airplane_349_epoch_100_iter_600](/uploads/852f878c7b8666504b69fc63dc629330/airplane_349_epoch_100_iter_600.jpg) |
 
-### Upscale Difference
+### 6.3 Upscale Difference
 | Image | LR                                                                                        | BICUBIC                                                                                             | SR                                                                                                                                    |
 |-------|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
 | Up_2  | ![airplane_349_lr_up2](/uploads/a522dfa54f361e233b8f144af8e73197/airplane_349_lr_up2.jpg) | ![airplane_349_lr_up2_lerp](/uploads/f0b040cb68e865d1948a2f668a4ff137/airplane_349_lr_up2_lerp.jpg) | ![airplane_349_up2_ESPCN_epoch_100_Nov17_00](/uploads/84d530d1ef1505362ddc335b61fa11cf/airplane_349_up2_ESPCN_epoch_100_Nov17_00.jpg) |
