@@ -134,7 +134,7 @@ $ python ./utils/extractor.py --data_dir DATA_DIR --mode 'slide-rand'
 or  
 save existing training, valiation, and testing dataset in `./dataset/save_dir` respectively
 
-### Preprocessing
+### 1. Preprocessing
 __Band choose__  
 ```python
 parser.add_argument('--band_mode', type=str, default='Y', choices=['Y', 'YCbCr', 'RGB'], help="band mode")
@@ -146,7 +146,7 @@ parser.add_argument('--aug', type=lambda x: (str(x).lower() == 'true'), default=
 parser.add_argument('--aug_mode', type=str, default='c', choices=['a', 'b', 'c', 'd', 'e'],
                         help='data augmentation mode: a, b, c, d, e')
 ```
-### Training
+### 2. Training
 __Train or Not?__
 ```python
 parser.add_argument('--train', type=lambda x: (str(x).lower() == 'true'), default=True, help='train or not?')
@@ -182,7 +182,7 @@ parser.add_argument('--cuda', type=lambda x: (str(x).lower() == 'true'), default
 parser.add_argument('--threads', type=int, default=6, help='number of threads for data loader to use')
 parser.add_argument('--seed', type=int, default=123, help='random seed to use. Default=123')
 ```
-### Testing
+### 3. Testing
 __Testing or Not?__
 ```python
 parser.add_argument('--test', type=lambda x: (str(x).lower() == 'true'), default=True, help='test or not?')
@@ -211,14 +211,14 @@ parser.add_argument('--test_middle_checkpoint', type=lambda x: (str(x).lower() =
 | ![up2_ESPCN_epoch_100_Nov17_00](/uploads/218a161ea230c22001db99c3e4e52232/up2_ESPCN_epoch_100_Nov17_00.png) | ![up2_SRDenseNet_epoch_100_Nov17_01](/uploads/6423f84d89c1d8cce26fc4902d686f90/up2_SRDenseNet_epoch_100_Nov17_01.png) |
 |:-----------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
 ### Model Info
-#### model settings
+#### model settings (`./logs/statistic/model_info.csv`)
 |  aug | aug_mode | band_mode | base_kernel | batch_size | crop_size | cuda | data_dir                                      | date     | epochs | evalbatch_size | ground_truth | interpolation | interval | iter_interval | iters | lr   | method     | middle_checkpoint | model_name                            | nEpochs | nb_channel | save_model_epoch | seed | test  | test_diff_model | test_dir                                                  | test_middle_checkpoint | test_model | test_model_name                  | testbatch_size | threads | train | trigger | upscale_factor | valbatch_size |
 |:----:|:--------:|-----------|-------------|------------|-----------|------|-----------------------------------------------|----------|--------|----------------|--------------|---------------|----------|---------------|-------|------|------------|-------------------|---------------------------------------|---------|------------|------------------|------|-------|-----------------|-----------------------------------------------------------|------------------------|------------|----------------------------------|----------------|---------|-------|---------|----------------|---------------|
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up4_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 4              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | True         | False         | 1        | 6             | 600   | 0.01 | ESPCN      | False             | up8_ESPCN_epoch_100_Nov17_00.pth      | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up4_ESPCN_epoch_100_Nov17_00.pth |                | 6       | True  | epoch   | 8              | 10            |
 | True | c        | Y         | 64          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_00 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | FSRCNN     | False             | up2_FSRCNN_epoch_100_Nov17_00.pth     | 100     | 1          |                  | 123  | True  |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | False                  | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
 | True | c        | Y         | 16          | 64         | 224       | True | /media/kaku/Work/geosr/dataset/airplane-alloc | Nov17_01 | 100    | 10             | False        | False         | 1        | 6             | 600   | 0.01 | SRDenseNet | False             | up2_SRDenseNet_epoch_100_Nov17_01.pth | 100     | 1          |                  | 123  | False |                 | /media/kaku/Work/geosr/dataset/airplane-alloc/images/test | True                   | True       | up2_ESPCN_epoch_200_Nov15_10.pth |                | 6       | True  | epoch   | 2              | 10            |
-#### performance
+#### performance (`./logs/statistic/trian.csv test.csv val.csv`)
 __train__
 
 | date     | epochs | fps     | iters | method     | nb_samples | nrmse | psnr    | ssim  | time(sec) |
@@ -254,9 +254,9 @@ __test__
 | Nov16_19 | 200    | 241.894 | 400   | SRDenseNet | 50         | 0.035 | -39.654 |       | 0.207     |
 
 ## Results
-### Model Difference (diff_model)
+### Model Difference (`diff_model`)
 #### table 
-__result_avg_log.csv__  
+`result_avg_log.csv`  
 
 | model                             | psnr_avg | ssim_avg | nrmse_avg |
 |-----------------------------------|----------|----------|-----------|
@@ -268,7 +268,7 @@ __result_avg_log.csv__
   
 <br>  
 
-__result_log.csv__  
+`result_log.csv`  
 
 | ip               | model                             | psnr    | ssim  | nrmse |
 |------------------|-----------------------------------|---------|-------|-------|
@@ -285,7 +285,7 @@ __result_log.csv__
 | Image     | ![airplane_349_up2_FSRCNN_epoch_100_Nov16_22](/uploads/bb6f56a1d889c3d71add00b9ff7455da/airplane_349_up2_FSRCNN_epoch_100_Nov16_22.jpg) | ![airplane_349_up2_SRCNN_epoch_100_Nov16_23](/uploads/9f8807936d31a3426fc7cada9b90bbbc/airplane_349_up2_SRCNN_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_VDSR_epoch_100_Nov16_23](/uploads/4bdba5e42a236a81e7a4655a63273acb/airplane_349_up2_VDSR_epoch_100_Nov16_23.jpg) | ![airplane_349_up2_SRDenseNet_epoch_100_Nov16_23](/uploads/e89b6eb926c769b97c0d73b0378fc66d/airplane_349_up2_SRDenseNet_epoch_100_Nov16_23.jpg) |
 ### Epoch Difference (middle_checkpoint)
 #### table
-__result_avg_log.csv__ 
+`result_avg_log.csv` 
 
 | model              | psnr_avg | ssim_avg | nrmse_avg |
 |--------------------|----------|----------|-----------|
@@ -302,7 +302,7 @@ __result_avg_log.csv__
 
 <br>  
 
-__result_log.csv__ 
+`result_log.csv` 
 
 | ip               | model              | psnr   | ssim  | nrmse |
 |------------------|--------------------|--------|-------|-------|
