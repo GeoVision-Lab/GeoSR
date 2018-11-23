@@ -373,7 +373,7 @@ class Tester(Base):
                 out_img = result_generator()
                 out_img.save(output_path)
                 
-                lerp_file = img_name + '_' + 'up' + str(args.upscale_factor) + '_lerp' + os.path.splitext(img_file)[1]
+                lerp_file = img_name + '_up' + str(args.upscale_factor) + '_lerp' + os.path.splitext(img_file)[1]
                 lerp_path = os.path.join(result_save_dir, lerp_file)
                 if not os.path.exists(lerp_path):
                     lr_img = Image.open(img_path)
@@ -453,8 +453,8 @@ class Tester(Base):
             self.logging(self.result_log)
             
             # generate lr image
-            lr_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + os.path.splitext(img_file)[1]
-            lr_lerp_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + '_lerp' + os.path.splitext(img_file)[1]
+            lr_file = img_name + '_up' + str(args.upscale_factor) +'_lr'+ os.path.splitext(img_file)[1]
+            lr_lerp_file = img_name + '_up' + str(args.upscale_factor) +'_lr_lerp' + os.path.splitext(img_file)[1]
             lr_path = os.path.join(result_save_dir, lr_file)
             lr_lerp_path = os.path.join(result_save_dir, lr_lerp_file)
             if not os.path.exists(lr_path):
@@ -468,7 +468,7 @@ class Tester(Base):
                 lerp_img = lr_img.resize((lr_img.size[0] * args.upscale_factor, lr_img.size[1] * args.upscale_factor), resample=Image.BICUBIC)
                 lerp_img.save(lr_lerp_path)
                 psnr_lerp, nrmse_lerp, ssim_lerp = lerp_img_evaluation(hr_img, lerp_img)
-                lerp_name = 'lr_up' + str(args.upscale_factor) + '_lerp'
+                lerp_name = 'up' + str(args.upscale_factor) + '_lr_lerp'
                 
                 result_log_lerp = [round(idx, 3) for idx in [psnr_lerp, nrmse_lerp, ssim_lerp]]
                 self.lerp_logging(result_log_lerp, lerp_name)
@@ -541,8 +541,8 @@ class Tester(Base):
             self.middle_logging(self.result_log, _checkpoint_name)
             
             # generate lr and linear interpolation image
-            lr_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + os.path.splitext(img_file)[1]
-            lr_lerp_file = img_name + '_' + 'lr_up' + str(args.upscale_factor) + '_lerp' + os.path.splitext(img_file)[1]
+            lr_file = img_name + '_up' + str(args.upscale_factor) + '_lr' + os.path.splitext(img_file)[1]
+            lr_lerp_file = img_name + '_up' + str(args.upscale_factor) + '_lr_lerp' + os.path.splitext(img_file)[1]
             lr_path = os.path.join(result_save_dir, lr_file)
             lr_lerp_path = os.path.join(result_save_dir, lr_lerp_file)
             if not os.path.exists(lr_path):
